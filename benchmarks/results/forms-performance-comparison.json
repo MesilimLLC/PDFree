@@ -1,0 +1,300 @@
+{
+  "description": "Warm fresh-process observations; same 20-page office.pdf SHA and 20-trial runner for office runs. Percent deltas compare current to the most recent prior page-tools run. Hardware models and renderer request match, but GPU driver and boot session differ.",
+  "office": {
+    "current": {
+      "file": "forms-warm-office.json",
+      "captured_utc": "2026-10-25T07:50:37.4879249Z",
+      "executable_sha256": "75B9F813B7FAA7E866353F36C2F4C8CDCAA712A9E0332E58B9019BACF03E00F9",
+      "document_sha256": "1D292405900C46EC9A61433E7CD62501762613EF9C777699A05D3AA23582E70C",
+      "renderer_requested": "winit default (FemtoVG with software fallback)",
+      "machine": {
+        "gpu": [
+          {
+            "Name": "NVIDIA GeForce RTX 5070",
+            "DriverVersion": "32.0.16.2101"
+          }
+        ],
+        "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor           ",
+        "last_boot_utc": "2026-10-24T21:42:45.5000000Z",
+        "os": "Microsoft Windows 11 Pro",
+        "ram_bytes": 68613902336,
+        "logical_processors": 16,
+        "build": "26200"
+      },
+      "metrics": {
+        "open_to_first_pixels_ms": {
+          "trials": 20,
+          "p50": 355.45475,
+          "p95_nearest_rank": 434.0559,
+          "min": 316.8006,
+          "max": 651.4746
+        },
+        "window_show_request_ms": {
+          "trials": 20,
+          "p50": 302.10484999999994,
+          "p95_nearest_rank": 353.8417,
+          "min": 245.5282,
+          "max": 357.3342
+        },
+        "tile_render_ms": {
+          "trials": 987,
+          "p50": 1.0511,
+          "p95_nearest_rank": 1.6983,
+          "min": 0.0902,
+          "max": 7.1694
+        },
+        "peak_working_set_mib": {
+          "trials": 20,
+          "p50": 152.9375,
+          "p95_nearest_rank": 157.80859375,
+          "min": 150.91796875,
+          "max": 158.62890625
+        },
+        "peak_private_mib": {
+          "trials": 20,
+          "p50": 181.89453125,
+          "p95_nearest_rank": 186.9296875,
+          "min": 179.77734375,
+          "max": 190.328125
+        }
+      }
+    },
+    "previous_closest": {
+      "file": "page-tools-warm-office.json",
+      "captured_utc": "2026-10-09T23:47:02.3871718Z",
+      "executable_sha256": "1B04732F10D1E7076F9BB37B768E2A35C72390BF425BB99767F0A1D75D1C183B",
+      "document_sha256": "1D292405900C46EC9A61433E7CD62501762613EF9C777699A05D3AA23582E70C",
+      "renderer_requested": "winit default (FemtoVG with software fallback)",
+      "machine": {
+        "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor           ",
+        "last_boot_utc": "2026-10-08T21:28:48.5000000Z",
+        "ram_bytes": 68613902336,
+        "build": "26200",
+        "logical_processors": 16,
+        "os": "Microsoft Windows 11 Pro",
+        "gpu": [
+          {
+            "Name": "NVIDIA GeForce RTX 5070",
+            "DriverVersion": "32.0.16.1714"
+          }
+        ]
+      },
+      "metrics": {
+        "open_to_first_pixels_ms": {
+          "trials": 20,
+          "p50": 473.34865,
+          "p95_nearest_rank": 993.3156,
+          "min": 236.01739999999998,
+          "max": 1080.7717
+        },
+        "window_show_request_ms": {
+          "trials": 20,
+          "p50": 824.5903000000001,
+          "p95_nearest_rank": 1443.8712,
+          "min": 351.3443,
+          "max": 2885.3325999999997
+        },
+        "tile_render_ms": {
+          "trials": 1007,
+          "p50": 0.9789,
+          "p95_nearest_rank": 1.9161,
+          "min": 0.0614,
+          "max": 8.3351
+        },
+        "peak_working_set_mib": {
+          "trials": 20,
+          "p50": 138.3203125,
+          "p95_nearest_rank": 150.80078125,
+          "min": 135.12109375,
+          "max": 151.1875
+        },
+        "peak_private_mib": {
+          "trials": 20,
+          "p50": 163.51953125,
+          "p95_nearest_rank": 180.84765625,
+          "min": 158.2578125,
+          "max": 181.26171875
+        }
+      }
+    },
+    "previous_reader_tools": {
+      "file": "reader-tools-warm-office.json",
+      "captured_utc": "2026-10-09T14:54:17.2962510Z",
+      "executable_sha256": "C8A2444D626595F89224A71ACA5E69F995A0706BB1758DCA00DC216E9C94DF5D",
+      "document_sha256": "1D292405900C46EC9A61433E7CD62501762613EF9C777699A05D3AA23582E70C",
+      "renderer_requested": "winit default (FemtoVG with software fallback)",
+      "machine": {
+        "logical_processors": 16,
+        "build": "26200",
+        "os": "Microsoft Windows 11 Pro",
+        "ram_bytes": 68613902336,
+        "last_boot_utc": "2026-10-08T21:28:48.5000000Z",
+        "gpu": [
+          {
+            "Name": "NVIDIA GeForce RTX 5070",
+            "DriverVersion": "32.0.16.1714"
+          }
+        ],
+        "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor           "
+      },
+      "metrics": {
+        "open_to_first_pixels_ms": {
+          "trials": 20,
+          "p50": 249.30235,
+          "p95_nearest_rank": 390.49060000000003,
+          "min": 184.3782,
+          "max": 505.03620000000006
+        },
+        "window_show_request_ms": {
+          "trials": 20,
+          "p50": 447.25735,
+          "p95_nearest_rank": 597.4129,
+          "min": 327.6308,
+          "max": 1018.7797999999999
+        },
+        "tile_render_ms": {
+          "trials": 971,
+          "p50": 0.9994999999999999,
+          "p95_nearest_rank": 1.6057000000000001,
+          "min": 0.0513,
+          "max": 6.9944999999999995
+        },
+        "peak_working_set_mib": {
+          "trials": 20,
+          "p50": 148.3984375,
+          "p95_nearest_rank": 151.73046875,
+          "min": 133.5703125,
+          "max": 152.6171875
+        },
+        "peak_private_mib": {
+          "trials": 20,
+          "p50": 180.052734375,
+          "p95_nearest_rank": 184.91796875,
+          "min": 161.234375,
+          "max": 185.03515625
+        }
+      }
+    }
+  },
+  "empty_window": {
+    "current": {
+      "file": "forms-warm-empty.json",
+      "captured_utc": "2026-10-25T07:52:00.4576042Z",
+      "executable_sha256": "75B9F813B7FAA7E866353F36C2F4C8CDCAA712A9E0332E58B9019BACF03E00F9",
+      "document_sha256": "1D292405900C46EC9A61433E7CD62501762613EF9C777699A05D3AA23582E70C",
+      "renderer_requested": "winit default (FemtoVG with software fallback)",
+      "machine": {
+        "logical_processors": 16,
+        "last_boot_utc": "2026-10-24T21:42:45.5000000Z",
+        "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor           ",
+        "gpu": [
+          {
+            "Name": "NVIDIA GeForce RTX 5070",
+            "DriverVersion": "32.0.16.2101"
+          }
+        ],
+        "os": "Microsoft Windows 11 Pro",
+        "ram_bytes": 68613902336,
+        "build": "26200"
+      },
+      "metrics": {
+        "open_to_first_pixels_ms": {
+          "trials": 0,
+          "p50": null,
+          "p95_nearest_rank": null,
+          "min": null,
+          "max": null
+        },
+        "window_show_request_ms": {
+          "trials": 20,
+          "p50": 315.28605,
+          "p95_nearest_rank": 375.859,
+          "min": 283.19169999999997,
+          "max": 384.1769
+        },
+        "tile_render_ms": {
+          "trials": 0,
+          "p50": null,
+          "p95_nearest_rank": null,
+          "min": null,
+          "max": null
+        },
+        "peak_working_set_mib": {
+          "trials": 20,
+          "p50": 81.203125,
+          "p95_nearest_rank": 81.98828125,
+          "min": 69.375,
+          "max": 82.6640625
+        },
+        "peak_private_mib": {
+          "trials": 20,
+          "p50": 98.91015625,
+          "p95_nearest_rank": 99.796875,
+          "min": 83.1953125,
+          "max": 99.8828125
+        }
+      }
+    },
+    "previous_original_renderer": {
+      "file": "warm-empty-femtovg.json",
+      "captured_utc": "2026-10-09T11:20:55.0229382Z",
+      "executable_sha256": "A6C20B70F15F2C24A8071D877348E09D6ED411E768A89BF4EBAF5FC08230336A",
+      "document_sha256": "1D292405900C46EC9A61433E7CD62501762613EF9C777699A05D3AA23582E70C",
+      "renderer_requested": "winit-femtovg",
+      "machine": {
+        "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor           ",
+        "last_boot_utc": "2026-10-08T21:28:48.5000000Z",
+        "os": "Microsoft Windows 11 Pro",
+        "ram_bytes": 68613902336,
+        "build": "26200",
+        "gpu": [
+          {
+            "Name": "NVIDIA GeForce RTX 5070",
+            "DriverVersion": "32.0.16.1714"
+          }
+        ],
+        "logical_processors": 16
+      },
+      "metrics": {
+        "open_to_first_pixels_ms": {
+          "trials": 0,
+          "p50": null,
+          "p95_nearest_rank": null,
+          "min": null,
+          "max": null
+        },
+        "window_show_request_ms": {
+          "trials": 20,
+          "p50": 1000.62265,
+          "p95_nearest_rank": 1528.7952,
+          "min": 600.3512,
+          "max": 1800.8541
+        },
+        "tile_render_ms": {
+          "trials": 0,
+          "p50": null,
+          "p95_nearest_rank": null,
+          "min": null,
+          "max": null
+        },
+        "peak_working_set_mib": {
+          "trials": 20,
+          "p50": 66.173828125,
+          "p95_nearest_rank": 77.76953125,
+          "min": 64.95703125,
+          "max": 77.80078125
+        },
+        "peak_private_mib": {
+          "trials": 20,
+          "p50": 81.134765625,
+          "p95_nearest_rank": 97.58984375,
+          "min": 79.8203125,
+          "max": 97.78125
+        }
+      }
+    }
+  },
+  "physical_presentation_verified": false,
+  "scroll_frame_time_qualified": false,
+  "causal_attribution_to_forms": false
+}

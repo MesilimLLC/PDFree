@@ -1,0 +1,471 @@
+{
+  "captured_utc": "2026-10-25T07:52:00.4576042Z",
+  "executable_sha256": "75B9F813B7FAA7E866353F36C2F4C8CDCAA712A9E0332E58B9019BACF03E00F9",
+  "window_style_requested": "Hidden",
+  "document": "tests/corpus/office.pdf",
+  "document_sha256": "1D292405900C46EC9A61433E7CD62501762613EF9C777699A05D3AA23582E70C",
+  "renderer_requested": "winit default (FemtoVG with software fallback)",
+  "machine": {
+    "logical_processors": 16,
+    "last_boot_utc": "2026-10-24T21:42:45.5000000Z",
+    "cpu": "AMD Ryzen 7 5700X3D 8-Core Processor           ",
+    "gpu": [
+      {
+        "Name": "NVIDIA GeForce RTX 5070",
+        "DriverVersion": "32.0.16.2101"
+      }
+    ],
+    "os": "Microsoft Windows 11 Pro",
+    "ram_bytes": 68613902336,
+    "build": "26200"
+  },
+  "limitations": [
+    "First pixels means UI image publication, not verified physical display presentation.",
+    "Frame gaps include idle periods and do not measure scroll frame-time percentiles.",
+    "Peak memory is sampled at 25 ms; raster cache excludes Slint images and native allocations.",
+    "Warm means filesystem/driver caches were not cleared; process initialization is repeated.",
+    "No cold classification without an explicit post-reboot single trial."
+  ],
+  "runs": [
+    {
+      "trial": 1,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1196.4655,
+      "window_show_request_ms": 384.1769,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85106688,
+      "peak_private_bytes": 104587264,
+      "last_sample_working_set_bytes": 85106688,
+      "sampled_cpu_ms": 640.625,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        95.02350000000001
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/0.jsonl"
+    },
+    {
+      "trial": 2,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1029.9042,
+      "window_show_request_ms": 288.29789999999997,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85970944,
+      "peak_private_bytes": 103845888,
+      "last_sample_working_set_bytes": 85970944,
+      "sampled_cpu_ms": 578.125,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        102.52269999999987
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/1.jsonl"
+    },
+    {
+      "trial": 3,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1045.735,
+      "window_show_request_ms": 301.4346,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85147648,
+      "peak_private_bytes": 104353792,
+      "last_sample_working_set_bytes": 85147648,
+      "sampled_cpu_ms": 515.625,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        135.46170000000006
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/2.jsonl"
+    },
+    {
+      "trial": 4,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1060.6468,
+      "window_show_request_ms": 321.4884,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85147648,
+      "peak_private_bytes": 104259584,
+      "last_sample_working_set_bytes": 85147648,
+      "sampled_cpu_ms": 609.375,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        134.97670000000005
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/3.jsonl"
+    },
+    {
+      "trial": 5,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1022.7067,
+      "window_show_request_ms": 283.6417,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85172224,
+      "peak_private_bytes": 102961152,
+      "last_sample_working_set_bytes": 85172224,
+      "sampled_cpu_ms": 562.5,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        96.3184
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/4.jsonl"
+    },
+    {
+      "trial": 6,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1116.8591,
+      "window_show_request_ms": 367.508,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 72744960,
+      "peak_private_bytes": 87236608,
+      "last_sample_working_set_bytes": 72744960,
+      "sampled_cpu_ms": 531.25,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        107.84590000000003
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/5.jsonl"
+    },
+    {
+      "trial": 7,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1040.3008,
+      "window_show_request_ms": 309.202,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85049344,
+      "peak_private_bytes": 103489536,
+      "last_sample_working_set_bytes": 85049344,
+      "sampled_cpu_ms": 500.0,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        111.48840000000007
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/6.jsonl"
+    },
+    {
+      "trial": 8,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1062.3664,
+      "window_show_request_ms": 325.99,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85082112,
+      "peak_private_bytes": 103038976,
+      "last_sample_working_set_bytes": 85082112,
+      "sampled_cpu_ms": 656.25,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        97.07639999999992
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/7.jsonl"
+    },
+    {
+      "trial": 9,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1033.5452,
+      "window_show_request_ms": 292.87780000000004,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85151744,
+      "peak_private_bytes": 104734720,
+      "last_sample_working_set_bytes": 85151744,
+      "sampled_cpu_ms": 578.125,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        96.51159999999993
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/8.jsonl"
+    },
+    {
+      "trial": 10,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1117.2689,
+      "window_show_request_ms": 370.8567,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85241856,
+      "peak_private_bytes": 104304640,
+      "last_sample_working_set_bytes": 85241856,
+      "sampled_cpu_ms": 718.75,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        101.57269999999994
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/9.jsonl"
+    },
+    {
+      "trial": 11,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1097.192,
+      "window_show_request_ms": 350.6127,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85860352,
+      "peak_private_bytes": 103374848,
+      "last_sample_working_set_bytes": 85860352,
+      "sampled_cpu_ms": 625.0,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        138.63800000000003
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/10.jsonl"
+    },
+    {
+      "trial": 12,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1133.0088,
+      "window_show_request_ms": 375.859,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85143552,
+      "peak_private_bytes": 104644608,
+      "last_sample_working_set_bytes": 85143552,
+      "sampled_cpu_ms": 734.375,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        103.96629999999993
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/11.jsonl"
+    },
+    {
+      "trial": 13,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1053.3726,
+      "window_show_request_ms": 316.1423,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85442560,
+      "peak_private_bytes": 104361984,
+      "last_sample_working_set_bytes": 85442560,
+      "sampled_cpu_ms": 625.0,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        109.12569999999994
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/12.jsonl"
+    },
+    {
+      "trial": 14,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1050.2029,
+      "window_show_request_ms": 314.4298,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85602304,
+      "peak_private_bytes": 102907904,
+      "last_sample_working_set_bytes": 85602304,
+      "sampled_cpu_ms": 562.5,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        106.39679999999998
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/13.jsonl"
+    },
+    {
+      "trial": 15,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1038.3331,
+      "window_show_request_ms": 303.91200000000003,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85049344,
+      "peak_private_bytes": 103813120,
+      "last_sample_working_set_bytes": 85049344,
+      "sampled_cpu_ms": 531.25,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        98.6921000000001
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/14.jsonl"
+    },
+    {
+      "trial": 16,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1099.4034,
+      "window_show_request_ms": 355.7353,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 86679552,
+      "peak_private_bytes": 103002112,
+      "last_sample_working_set_bytes": 86679552,
+      "sampled_cpu_ms": 703.125,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        109.14920000000006
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/15.jsonl"
+    },
+    {
+      "trial": 17,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1057.434,
+      "window_show_request_ms": 283.19169999999997,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85127168,
+      "peak_private_bytes": 103280640,
+      "last_sample_working_set_bytes": 85127168,
+      "sampled_cpu_ms": 546.875,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        98.12130000000002
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/16.jsonl"
+    },
+    {
+      "trial": 18,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1046.8265,
+      "window_show_request_ms": 303.6221,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85151744,
+      "peak_private_bytes": 104345600,
+      "last_sample_working_set_bytes": 85151744,
+      "sampled_cpu_ms": 468.75,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        94.14819999999997
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/17.jsonl"
+    },
+    {
+      "trial": 19,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1038.2386,
+      "window_show_request_ms": 286.6527,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 85000192,
+      "peak_private_bytes": 103616512,
+      "last_sample_working_set_bytes": 85000192,
+      "sampled_cpu_ms": 531.25,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        93.96160000000009
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/18.jsonl"
+    },
+    {
+      "trial": 20,
+      "mode": "Warm",
+      "cold_trial_id": "",
+      "process_elapsed_ms": 1046.0357,
+      "window_show_request_ms": 317.7746,
+      "first_pixels_from_main_ms": null,
+      "open_to_pixels_ms": null,
+      "peak_working_set_bytes": 84914176,
+      "peak_private_bytes": 103571456,
+      "last_sample_working_set_bytes": 84914176,
+      "sampled_cpu_ms": 578.125,
+      "empty_window": true,
+      "raster_cache_bytes": 0,
+      "cache_hits": 0,
+      "cache_misses": 0,
+      "tile_render_ms": [],
+      "rendered_frame_gaps_ms": [
+        88.36770000000001
+      ],
+      "trace_file": "benchmarks/runs/edd38756-bf3a-4c0d-959f-72c64bdd32e9/19.jsonl"
+    }
+  ]
+}
