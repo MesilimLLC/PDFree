@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title">
+  <title id="title">PDFree document and leaf</title>
+  <path d="M74 31h77l54 54v93c0 15-12 27-27 27H74c-15 0-27-12-27-27V58c0-15 12-27 27-27Z" fill="#F4F8FF" stroke="#234979" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M151 35v35c0 10 8 18 18 18h32Z" fill="#2167D8"/>
+  <path d="M77 107h66M77 132h86" fill="none" stroke="#4C709D" stroke-width="10" stroke-linecap="round"/>
+  <path d="M26 158c22 36 57 34 87 17 38-22 70-47 116-47-10 56-46 99-101 99-47 0-87-26-102-69Z" fill="#13865A"/>
+  <path d="M26 158c22 36 57 34 87 17 38-22 70-47 116-47-32 16-61 52-98 66-43 17-82 7-105-36Z" fill="#32CC83"/>
+</svg>

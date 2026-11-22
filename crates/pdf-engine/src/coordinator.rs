@@ -1,4 +1,4 @@
-use crate::backend::{DisplayListBackend, DocumentBackend, open_document};
+use crate::backend::{DisplayListBackend, DocumentBackend};
 use crate::{DocumentInfo, EngineError, Event, FileAction, FileCommandAction, Shared, raster};
 use crossbeam_channel::{Receiver, Sender, bounded};
 use mupdf::{
@@ -92,7 +92,6 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
     drop(completed);
     drop(job_rx);
     let mut document: Option<PdfDocument> = None;
-    let mut backend: Option<Box<dyn DocumentBackend>> = None;
     let mut detection: Option<crate::detection::Detection> = None;
     let mut detection_done: Option<(u64, usize, Vec<usize>)> = None;
     let mut can_copy = false;
@@ -136,7 +135,6 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
             navigation = crate::navigation::Navigation::default();
             lists.clear();
             document = None;
-            backend = None;
             geometry.clear();
             queue.replace(Vec::new());
             document_id = open.document;
@@ -208,10 +206,6 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                     geometry[0] = Some(info.first_page);
                     cursor = 1;
                     document = Some(doc);
-                    // Create the backend trait abstraction for the opened document.
-                    if let Ok(b) = open_document(&open.path, open.password.as_deref()) {
-                        backend = Some(b);
-                    }
                     emit(
                         &shared,
                         &events,
@@ -601,11 +595,10 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                                     Err("Document changed before rename completed".into())
                                 } else {
                                     lists.clear();
-                                    drop(backend.take());
                                     drop(document.take());
                                     let (baseline, result) = prepared.commit(&source_path);
                                     document = Some(baseline);
-                                    let result = match result {
+                                    match result {
                                         Ok(path) => {
                                             source_path = path.clone();
                                             if let Some(h) = journal.as_mut() {
@@ -624,10 +617,7 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                                             source_path = failure.path;
                                             Err(failure.message)
                                         }
-                                    };
-                                    backend = open_document(&source_path, session_password.as_deref())
-                                        .ok();
-                                    result
+                                    }
                                 }
                             }
                         }
@@ -658,7 +648,6 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                                     // Release all page/document handles before Windows moves the open file.
                                     lists.clear();
                                     notes_cache.clear();
-                                    drop(backend.take());
                                     document = None;
                                     let moved =
                                         crate::files::move_no_replace(&source_path, &target);
@@ -671,7 +660,7 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                                         &reopen_path,
                                         session_password.as_deref(),
                                     );
-                                    let result = match reopened {
+                                    match reopened {
                                         Ok(doc) => {
                                             document = Some(doc);
                                             match moved {
@@ -720,15 +709,7 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                                                 }
                                             }
                                         }
-                                    };
-                                    if document.is_some() {
-                                        backend = open_document(
-                                            &source_path,
-                                            session_password.as_deref(),
-                                        )
-                                        .ok();
                                     }
-                                    result
                                 }
                             }
                         }
@@ -1003,6 +984,8 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
             }
         }
         if let Some(doc) = &document {
+            // Render the same in-memory revision used by editing and reading.
+            let backend: &dyn DocumentBackend = doc;
             if let Some(page) = form_queue.pop_front() {
                 match crate::forms::page(doc, page) {
                     Ok(fields) => {
@@ -1113,15 +1096,11 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                 }
                 if let std::collections::hash_map::Entry::Vacant(entry) = lists.entry(page) {
                     let started = Instant::now();
-                    let result = backend
-                        .as_ref()
-                        .ok_or_else(|| "PDF backend is unavailable".to_string())
-                        .and_then(|backend| backend.load_page(page as i32))
-                        .and_then(|page| {
-                            let size = page.bounds()?;
-                            let list = page.to_display_list(true)?;
-                            Ok((size, list))
-                        });
+                    let result = backend.load_render_page(page as i32).and_then(|page| {
+                        let size = page.bounds()?;
+                        let list = page.to_display_list(true)?;
+                        Ok((size, list))
+                    });
                     match result {
                         Ok((size, list)) => {
                             if geometry[page] != Some(size) {
@@ -1191,9 +1170,7 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                     continue;
                 }
                 let result = backend
-                    .as_ref()
-                    .ok_or_else(|| "PDF backend is unavailable".to_string())
-                    .and_then(|backend| backend.load_page(page as i32))
+                    .load_render_page(page as i32)
                     .and_then(|page_handle| {
                         let bounds = page_handle.bounds()?;
                         let scale = (crate::constants::THUMBNAIL_WIDTH_SCALE / bounds.width)

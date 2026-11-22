@@ -1,7 +1,6 @@
 //! PDF backend trait abstraction.
 //! Defines the operations the coordinator needs from a PDF engine, allowing
 //! the backend to be swapped without changing the coordinator or subsystems.
-use std::path::Path;
 use viewer_core::PageSize;
 
 /// A page handle returned by the backend.
@@ -33,50 +32,18 @@ pub trait DisplayListBackend: Send + Sync {
 /// A document handle returned by the backend.
 pub trait DocumentBackend {
     /// Loads a page by index.
-    fn load_page(&self, page: i32) -> Result<Box<dyn PageBackend>, String>;
-}
-
-/// Open a PDF document from a file path using the MuPDF backend.
-pub fn open_document(
-    path: &Path,
-    password: Option<&str>,
-) -> Result<Box<dyn DocumentBackend>, String> {
-    crate::backend::mupdf::MupdfDocument::open(path, password)
+    fn load_render_page(&self, page: i32) -> Result<Box<dyn PageBackend>, String>;
 }
 
 /// MuPDF implementation of the backend traits.
 pub mod mupdf {
     use super::*;
     use ::mupdf::pdf::PdfDocument;
-    use ::mupdf::{Colorspace, Device, DisplayList, Document, IRect, Matrix, Page, Pixmap, Rect};
-    use std::path::Path;
+    use ::mupdf::{Colorspace, Device, DisplayList, IRect, Matrix, Page, Pixmap, Rect};
 
-    pub struct MupdfDocument {
-        doc: PdfDocument,
-    }
-
-    impl MupdfDocument {
-        pub fn open(
-            path: &Path,
-            password: Option<&str>,
-        ) -> Result<Box<dyn DocumentBackend>, String> {
-            let path_str = path.to_str().ok_or("Path is not valid Unicode")?;
-            let mut doc = Document::open(path_str)
-                .and_then(PdfDocument::try_from)
-                .map_err(|e| e.to_string())?;
-            if doc.needs_password().map_err(|e| e.to_string())? {
-                let password = password.ok_or("This PDF requires a password.")?;
-                if !doc.authenticate(password).map_err(|e| e.to_string())? {
-                    return Err("The password was not accepted. Try again.".into());
-                }
-            }
-            Ok(Box::new(MupdfDocument { doc }))
-        }
-    }
-
-    impl DocumentBackend for MupdfDocument {
-        fn load_page(&self, page: i32) -> Result<Box<dyn PageBackend>, String> {
-            let page = self.doc.load_page(page).map_err(|e| e.to_string())?;
+    impl DocumentBackend for PdfDocument {
+        fn load_render_page(&self, page: i32) -> Result<Box<dyn PageBackend>, String> {
+            let page = self.load_page(page).map_err(|e| e.to_string())?;
             Ok(Box::new(MupdfPage { page }))
         }
     }
