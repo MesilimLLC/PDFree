@@ -17,4 +17,5 @@ png = "0.18"
 wgpu = ["slint/renderer-femtovg-wgpu"]
 
 [build-dependencies]
+embed-resource = "3.0.12"
 slint-build = "=1.18.1"
