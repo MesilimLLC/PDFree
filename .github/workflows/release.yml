@@ -17,7 +17,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.release_tag || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
       - name: Check out the tagged source
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.release_tag || github.ref }}
+          ref: ${{ inputs.release_tag != '' && format('refs/tags/{0}', inputs.release_tag) || github.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -67,7 +67,7 @@ jobs:
           $metadata = cargo metadata --locked --format-version 1 | ConvertFrom-Json
           $version = ($metadata.packages | Where-Object { $_.name -eq 'pdfree' }).version
           "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-          $releaseTag = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME } else { $env:RELEASE_TAG_INPUT }
+          $releaseTag = if ($env:GITHUB_EVENT_NAME -eq 'push' -and $env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME } else { $env:RELEASE_TAG_INPUT }
           if (-not [string]::IsNullOrWhiteSpace($releaseTag)) {
             if ($releaseTag -ne "v$version") {
               throw "Release tag $releaseTag does not match workspace version $version. Bump Cargo.toml first."
@@ -127,13 +127,13 @@ jobs:
           retention-days: 30
 
       - name: Attest build provenance
-        if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
+        if: (github.event_name == 'push' && github.ref_type == 'tag') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: artifacts/*.zip
 
       - name: Publish the GitHub Release
-        if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
+        if: (github.event_name == 'push' && github.ref_type == 'tag') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -141,9 +141,14 @@ jobs:
           $name = "PDFree-$env:VERSION-windows-x64"
           $releaseTag = $env:RELEASE_TAG
           $assets = @("artifacts/$name.zip", "artifacts/$name.zip.sha256")
-          gh release view $releaseTag --json tagName *> $null
+          $existingAssetNames = @(gh release view $releaseTag --json assets --jq '.assets[].name' 2>$null)
           if ($LASTEXITCODE -eq 0) {
-            gh release upload $releaseTag @assets
+            $missingAssets = @($assets | Where-Object { [System.IO.Path]::GetFileName($_) -notin $existingAssetNames })
+            if ($missingAssets.Count -gt 0) {
+              gh release upload $releaseTag @missingAssets
+            } else {
+              Write-Host "The release already has both assets; leaving them unchanged."
+            }
           } else {
             gh release create $releaseTag @assets `
               --verify-tag `
