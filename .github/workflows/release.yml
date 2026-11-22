@@ -1,5 +1,5 @@
-# Release: tag `vX.Y.Z` publishes a GitHub Release; manual runs only
-# upload the portable zip as a build artifact for inspection.
+# Release: tag `vX.Y.Z` publishes a GitHub Release. Manual runs without a
+# release_tag upload only the portable zip as a build artifact for inspection.
 name: Release
 
 on:
@@ -7,6 +7,11 @@ on:
     tags:
       - "v*.*.*"
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing release tag to build and publish (leave blank for an artifact-only run)
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -27,6 +32,8 @@ jobs:
     steps:
       - name: Check out the tagged source
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag || github.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -54,16 +61,19 @@ jobs:
 
       - name: Verify tag matches the workspace version
         shell: pwsh
+        env:
+          RELEASE_TAG_INPUT: ${{ inputs.release_tag }}
         run: |
           $metadata = cargo metadata --locked --format-version 1 | ConvertFrom-Json
           $version = ($metadata.packages | Where-Object { $_.name -eq 'pdfree' }).version
           "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
-          if ($env:GITHUB_REF_TYPE -eq 'tag') {
-            $tagVersion = $env:GITHUB_REF_NAME -replace '^v', ''
-            if ($tagVersion -ne $version) {
-              throw "Tag $env:GITHUB_REF_NAME does not match workspace version $version. Bump Cargo.toml first."
+          $releaseTag = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME } else { $env:RELEASE_TAG_INPUT }
+          if (-not [string]::IsNullOrWhiteSpace($releaseTag)) {
+            if ($releaseTag -ne "v$version") {
+              throw "Release tag $releaseTag does not match workspace version $version. Bump Cargo.toml first."
             }
           }
+          "RELEASE_TAG=$releaseTag" | Out-File -FilePath $env:GITHUB_ENV -Append
           Write-Host "PDFree version: $version"
 
       - name: Bootstrap pinned native tools
@@ -117,20 +127,27 @@ jobs:
           retention-days: 30
 
       - name: Attest build provenance
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
         uses: actions/attest-build-provenance@v2
         with:
           subject-path: artifacts/*.zip
 
       - name: Publish the GitHub Release
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           $name = "PDFree-$env:VERSION-windows-x64"
-          gh release create $env:GITHUB_REF_NAME `
-            "artifacts/$name.zip" "artifacts/$name.zip.sha256" `
-            --verify-tag `
-            --title "PDFree $env:GITHUB_REF_NAME" `
-            --generate-notes
+          $releaseTag = $env:RELEASE_TAG
+          $assets = @("artifacts/$name.zip", "artifacts/$name.zip.sha256")
+          gh release view $releaseTag --json tagName *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $releaseTag @assets
+          } else {
+            gh release create $releaseTag @assets `
+              --verify-tag `
+              --title "PDFree $releaseTag" `
+              --generate-notes
+          }
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
