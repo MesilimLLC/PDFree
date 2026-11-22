@@ -92,8 +92,9 @@ jobs:
       - name: Smoke-test the packaged executable
         shell: pwsh
         run: |
-          & ./dist/PDFree/pdfree.exe --help
-          if ($LASTEXITCODE -ne 0) { throw "Packaged pdfree.exe --help exited with $LASTEXITCODE" }
+          $executable = (Resolve-Path -LiteralPath './dist/PDFree/pdfree.exe').Path
+          $process = Start-Process -FilePath $executable -ArgumentList '--help' -Wait -PassThru
+          if ($process.ExitCode -ne 0) { throw "Packaged pdfree.exe --help exited with $($process.ExitCode)" }
 
       - name: Zip the package and record its checksum
         shell: pwsh
