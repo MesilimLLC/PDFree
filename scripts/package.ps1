@@ -25,6 +25,7 @@ $fontLicenses = Join-Path $destinationPath 'licenses/Caveat'
 $null = New-Item -ItemType Directory -Force -Path $fontLicenses
 Copy-Item -LiteralPath (Join-Path $root 'assets/signatures/OFL.txt') -Destination $fontLicenses
 Copy-Item -LiteralPath $Executable -Destination (Join-Path $destinationPath 'pdfree.exe')
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'register-pdfree.ps1') -Destination $destinationPath
 foreach ($file in @('README.md','LICENSE','THIRD_PARTY_NOTICES.md','Cargo.lock')) { Copy-Item -LiteralPath $file -Destination $destinationPath }
 Copy-Item -LiteralPath 'docs' -Destination $destinationPath -Recurse -Force
 $benchmarkDestination = Join-Path $destinationPath 'benchmarks'

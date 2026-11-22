@@ -16,6 +16,19 @@ Requirements: Rust 1.97.1 MSVC, Python 3, Visual Studio C++ Build Tools with the
 
 The first build downloads public Rust dependencies. The application itself has no network services, telemetry, JavaScript execution, or cloud requirements. The portable package includes pinned English OCR for field detection. Use the portable folder produced by `scripts/package.ps1` for local deployment; source and the lockfile remain in this repository.
 
+## Open PDFs with PDFree
+
+Extract the portable ZIP to a folder you plan to keep. Open PowerShell in that folder and run `./register-pdfree.ps1`. This registers PDFree for your Windows account without admin rights or changing your current default.
+
+- To open a PDF once: right-click it, choose **Open with**, and select **PDFree**.
+- To make it the default: open **Settings → Apps → Default apps**, search for `.pdf`, and select **PDFree**.
+
+If PowerShell blocks the downloaded script and you trust the release, run `Unblock-File -LiteralPath ./register-pdfree.ps1` and retry.
+
+If you move the folder, run the script again from its new location. Before removing PDFree, choose another PDF default if needed, then run `./register-pdfree.ps1 -Unregister`.
+
+From a source checkout, use `./scripts/register-pdfree.ps1 -Executable ./target/release/pdfree.exe` instead.
+
 ## Releasing
 
 Bump the workspace version in `Cargo.toml`, then push a matching tag (for example `v0.1.0`). The release workflow in [.github/workflows/release.yml](.github/workflows/release.yml) runs the full check suite, builds and packages the portable Windows x64 zip, attests its provenance, and publishes it as a GitHub Release with a SHA-256 checksum. Running the workflow manually produces the same zip as a downloadable build artifact without publishing.
