@@ -1,4 +1,4 @@
-import { Button, LineEdit, TextEdit, ScrollView, Spinner, Palette, ComboBox, CheckBox } from "std-widgets.slint";
+import { LineEdit, TextEdit, ScrollView, Spinner, Palette, ComboBox, CheckBox } from "std-widgets.slint";
 import "../../../assets/signatures/Caveat.ttf";
 
 export struct PageSurface { x: float, y: float, w: float, h: float, number: int }
@@ -26,6 +26,14 @@ export global Theme {
     out property <color> warning-background: dark ? #3a2f14 : #fff8e8;
     out property <color> warning: dark ? #f0c36d : #805715;
     out property <color> page: #ffffff;
+    // Control states. Rest is one tonal step off the bar; hover and press step further.
+    out property <color> control: dark ? #1f2c3d : #f4f6f9;
+    out property <color> control-hover: dark ? #28384d : #e8eef6;
+    out property <color> control-pressed: dark ? #31445c : #d8e3f0;
+    out property <color> accent-soft: dark ? #17304a : #dbe9f8;
+    // Review marker: ochre fill with near-black text, readable in both modes.
+    out property <color> review: #d68c00;
+    out property <color> review-text: #2b1a00;
     out property <length> space-xs: 4px;
     out property <length> space-s: 8px;
     out property <length> space-m: 12px;
@@ -35,6 +43,161 @@ export global Theme {
     out property <length> font-s: 12px;
     out property <length> font-m: 14px;
     out property <length> font-l: 20px;
+}
+
+// Monoline icon set: 24-unit grid, round caps and joins, one stroke weight.
+// Each entry is an SVG path string drawn natively, so no font or image is needed.
+export global Icons {
+    out property <string> open: "M3 7 A2 2 0 0 1 5 5 H9 L11 7 H19 A2 2 0 0 1 21 9 V17 A2 2 0 0 1 19 19 H5 A2 2 0 0 1 3 17 Z";
+    out property <string> save: "M5 3 H16 L21 8 V19 A2 2 0 0 1 19 21 H5 A2 2 0 0 1 3 19 V5 A2 2 0 0 1 5 3 Z M7 3 V8 H15 V3 M7 21 V14 H17 V21";
+    out property <string> save-as: "M11 9 H19 A2 2 0 0 1 21 11 V19 A2 2 0 0 1 19 21 H11 A2 2 0 0 1 9 19 V11 A2 2 0 0 1 11 9 Z M5 15 A2 2 0 0 1 3 13 V5 A2 2 0 0 1 5 3 H13 A2 2 0 0 1 15 5 V7";
+    out property <string> print: "M7 9 V3 H17 V9 M7 17 H5 A2 2 0 0 1 3 15 V11 A2 2 0 0 1 5 9 H19 A2 2 0 0 1 21 11 V15 A2 2 0 0 1 19 17 H17 M7 14 H17 V21 H7 Z";
+    out property <string> moon: "M20 14.5 A8 8 0 1 1 9.5 4 A6.5 6.5 0 0 0 20 14.5 Z";
+    out property <string> sun: "M12 8 A4 4 0 1 0 12 16 A4 4 0 1 0 12 8 Z M12 2 V4 M12 20 V22 M4.9 4.9 L6.3 6.3 M17.7 17.7 L19.1 19.1 M2 12 H4 M20 12 H22 M4.9 19.1 L6.3 17.7 M17.7 6.3 L19.1 4.9";
+    out property <string> pages: "M14 3 H6 A2 2 0 0 0 4 5 V19 A2 2 0 0 0 6 21 H18 A2 2 0 0 0 20 19 V9 Z M14 3 V9 H20";
+    out property <string> bookmarks: "M6 3 H18 V21 L12 17 L6 21 Z";
+    out property <string> form: "M9 3 H15 A1 1 0 0 1 16 4 V5 A1 1 0 0 1 15 6 H9 A1 1 0 0 1 8 5 V4 A1 1 0 0 1 9 3 Z M16 4.5 H18 A2 2 0 0 1 20 6.5 V19 A2 2 0 0 1 18 21 H6 A2 2 0 0 1 4 19 V6.5 A2 2 0 0 1 6 4.5 H8 M8 11 H16 M8 15 H13";
+    out property <string> manage-pages: "M8 3 H16 A2 2 0 0 1 18 5 V15 A2 2 0 0 1 16 17 H8 A2 2 0 0 1 6 15 V5 A2 2 0 0 1 8 3 Z M4 7 V19 A2 2 0 0 0 6 21 H14";
+    out property <string> annotations: "M21 15 A2 2 0 0 1 19 17 H8 L3 21 V5 A2 2 0 0 1 5 3 H19 A2 2 0 0 1 21 5 Z M8 9 H16 M8 13 H13";
+    out property <string> highlight: "M15 3 L21 9 L10 20 H4 V14 Z M13 5 L19 11 M13 21 H21";
+    out property <string> add-note: "M15 3 H6 A2 2 0 0 0 4 5 V19 A2 2 0 0 0 6 21 H18 A2 2 0 0 0 20 19 V8 Z M15 3 V8 H20 M12 12 V18 M9 15 H15";
+    out property <string> pencil: "M17 3 L21 7 L8 20 L3 21 L4 16 Z M14 6 L18 10";
+    out property <string> undo: "M9 14 L4 9 L9 4 M4 9 H15 A5 5 0 0 1 15 19 H11";
+    out property <string> redo: "M15 14 L20 9 L15 4 M20 9 H9 A5 5 0 0 0 9 19 H13";
+    out property <string> find: "M11 4 A7 7 0 1 0 11 18 A7 7 0 1 0 11 4 Z M21 21 L16.1 16.1";
+    out property <string> close: "M6 6 L18 18 M18 6 L6 18";
+    out property <string> more: "M5 10.6 A1.4 1.4 0 1 0 5 13.4 A1.4 1.4 0 1 0 5 10.6 Z M12 10.6 A1.4 1.4 0 1 0 12 13.4 A1.4 1.4 0 1 0 12 10.6 Z M19 10.6 A1.4 1.4 0 1 0 19 13.4 A1.4 1.4 0 1 0 19 10.6 Z";
+    out property <string> chevron-left: "M15 6 L9 12 L15 18";
+    out property <string> chevron-right: "M9 6 L15 12 L9 18";
+    out property <string> chevron-up: "M6 15 L12 9 L18 15";
+    out property <string> zoom-in: "M5 12 H19 M12 5 V19";
+    out property <string> zoom-out: "M5 12 H19";
+}
+
+component Icon inherits Rectangle {
+    in property <string> d;
+    in property <color> tint: Theme.text-primary;
+    in property <length> size: 18px;
+    in property <bool> filled: false;
+    width: root.size;
+    height: root.size;
+    Path {
+        width: 100%;
+        height: 100%;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: root.d;
+        stroke: root.tint;
+        stroke-width: 1.6px;
+        stroke-line-cap: round;
+        stroke-line-join: round;
+        fill: root.filled ? root.tint : transparent;
+    }
+}
+
+// The one button vocabulary: icon + label, with rest, hover, pressed, checked,
+// focus and disabled states. Clicking does not take focus, so document shortcuts
+// keep working; Tab and Space/Enter still reach it from the keyboard.
+component ToolButton inherits Rectangle {
+    in property <string> text;
+    in property <string> icon;
+    in property <string> trailing-icon;
+    in property <bool> enabled: true;
+    in property <bool> checked: false;
+    in property <bool> checkable: false;
+    in property <bool> compact: false;
+    callback clicked();
+    public function focus-button() { fs.focus(); }
+    property <color> fg: !root.enabled ? Theme.text-secondary.with-alpha(0.55) : root.checked ? Theme.accent : Theme.text-primary;
+    min-height: 26px;
+    min-width: root.compact ? 30px : 0px;
+    horizontal-stretch: 0;
+    border-radius: Theme.radius-s;
+    border-width: 1px;
+    border-color: fs.has-focus || root.checked ? Theme.accent : Theme.border;
+    background: !root.enabled ? Theme.control : touch.pressed ? Theme.control-pressed : touch.has-hover ? Theme.control-hover : root.checked ? Theme.accent-soft : Theme.control;
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-checkable: root.checkable;
+    accessible-checked: root.checked;
+    accessible-action-default => { if root.enabled { root.clicked(); } }
+    HorizontalLayout {
+        padding-left: root.compact || root.text == "" ? 5px : 10px;
+        padding-right: root.compact || root.text == "" ? 5px : 10px;
+        padding-top: touch.pressed ? 1px : 0px;
+        spacing: 8px;
+        alignment: center;
+        if root.icon != "": Rectangle {
+            width: 18px;
+            Icon { d: root.icon; tint: root.fg; size: 18px; y: (parent.height - self.height) / 2; }
+        }
+        if !root.compact && root.text != "": Text {
+            text: root.text;
+            color: root.fg;
+            font-size: Theme.font-m;
+            vertical-alignment: center;
+        }
+        if root.trailing-icon != "": Rectangle {
+            width: 14px;
+            Icon { d: root.trailing-icon; tint: root.fg; size: 14px; y: (parent.height - self.height) / 2; }
+        }
+    }
+    fs := FocusScope {
+        enabled: root.enabled;
+        focus-on-click: false;
+        key-pressed(event) => {
+            if root.enabled && (event.text == " " || event.text == Key.Return) { root.clicked(); return accept; }
+            return reject;
+        }
+    }
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => { root.clicked(); }
+    }
+}
+
+// A row in a popup menu: icon, label and an optional shortcut hint.
+component MenuItem inherits Rectangle {
+    in property <string> text;
+    in property <string> icon;
+    in property <string> hint;
+    in property <bool> enabled: true;
+    callback clicked();
+    public function focus-item() { fs.focus(); }
+    property <color> fg: root.enabled ? Theme.text-primary : Theme.text-secondary.with-alpha(0.55);
+    height: 32px;
+    border-radius: Theme.radius-s;
+    border-width: fs.has-focus ? 1px : 0px;
+    border-color: Theme.accent;
+    background: root.enabled && (touch.has-hover || fs.has-focus) ? Theme.control-hover : transparent;
+    accessible-role: button;
+    accessible-label: root.text;
+    accessible-action-default => { if root.enabled { root.clicked(); } }
+    HorizontalLayout {
+        padding-left: 10px;
+        padding-right: 10px;
+        spacing: 10px;
+        if root.icon != "": Rectangle {
+            width: 16px;
+            Icon { d: root.icon; tint: root.fg; size: 16px; y: (parent.height - self.height) / 2; }
+        }
+        Text { text: root.text; color: root.fg; font-size: Theme.font-m; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
+        if root.hint != "": Text { text: root.hint; color: Theme.text-secondary; font-size: Theme.font-s; vertical-alignment: center; }
+    }
+    fs := FocusScope {
+        enabled: root.enabled;
+        focus-on-click: false;
+        key-pressed(event) => {
+            if root.enabled && (event.text == " " || event.text == Key.Return) { root.clicked(); return accept; }
+            return reject;
+        }
+    }
+    touch := TouchArea {
+        enabled: root.enabled;
+        mouse-cursor: root.enabled ? MouseCursor.pointer : MouseCursor.default;
+        clicked => { root.clicked(); }
+    }
 }
 
 // Draggable right-edge handle; `target` is two-way bound to a panel width.
@@ -159,6 +322,21 @@ export component AppWindow inherits Window {
     in-out property <bool> dark-mode: false;
     in-out property <bool> page-menu-visible: false;
     in-out property <bool> context-visible: false;
+    in-out property <bool> more-menu-visible: false;
+    in-out property <int> form-review-count: 0;
+    // Toolbar tiers: wide shows every tool with a label; medium moves Manage pages and
+    // Annotations into the More menu; narrow also drops labels to icons.
+    // Set from the window width in `changed width` (a binding would loop through layout).
+    property <bool> toolbar-wide: true;
+    property <bool> toolbar-narrow: false;
+    changed width => {
+        root.toolbar-wide = root.width >= 1140px;
+        root.toolbar-narrow = root.width < 860px;
+    }
+    // Field kinds are grouped so only one small set of types is offered at a time.
+    property <int> kind-group: root.form-kind < 4 ? 0 : root.form-kind < 8 ? 1 : 2;
+    property <int> kind-start: root.kind-group == 0 ? 0 : root.kind-group == 1 ? 4 : 8;
+    property <[string]> kind-names: root.kind-group == 0 ? ["Text", "Multiline text", "Date", "Number"] : root.kind-group == 1 ? ["Checkbox", "Radio button", "Dropdown", "List"] : ["Visual signature", "Digital signature"];
     in-out property <float> context-x: 0;
     in-out property <float> context-y: 0;
     in-out property <bool> fit-page: false;
@@ -224,6 +402,7 @@ export component AppWindow inherits Window {
     forward-focus: keys;
     keys := FocusScope {
         key-pressed(event) => {
+            if event.text == Key.Escape && root.more-menu-visible { root.more-menu-visible = false; return accept; }
             if event.text == Key.Escape && root.page-menu-visible { root.page-menu-visible = false; return accept; }
             if event.text == Key.Escape && root.context-visible { root.context-visible = false; return accept; }
             if root.form-mode>0 && !root.signature-visible && !root.digital-visible && event.text==Key.Tab { root.action(event.modifiers.shift ? "form-previous" : "form-next"); return accept; }
@@ -285,12 +464,12 @@ export component AppWindow inherits Window {
                     }
                     Text { visible: root.dirty-document; text: "Unsaved"; color: Theme.warning; vertical-alignment: center; font-size: Theme.font-s; }
                     Rectangle { width: 1px; background: Theme.border; }
-                    Button { text: "📂 Open"; accessible-label: "Open PDF"; enabled: !root.file-busy && !root.rename-active; clicked => { root.action("open"); } }
-                    Button { text: root.file-busy ? "💾 Saving…" : "💾 Save"; accessible-label: "Save"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("save"); } }
-                    Button { text: "Save as..."; accessible-label: "Save as"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("save-as"); } }
-                    Button { text: "📤 Export"; accessible-label: "Export a PDF copy"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("save-as"); } }
-                    Button { text: "🖨 Print"; accessible-label: "Print"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("print"); } }
-                    Button { text: root.dark-mode ? "☀ Light" : "🌙 Dark"; accessible-label: "Toggle dark mode"; clicked => { root.dark-mode = !root.dark-mode; } }
+                    ToolButton { text: "Open"; icon: Icons.open; accessible-label: "Open PDF"; enabled: !root.file-busy && !root.rename-active; clicked => { root.action("open"); } }
+                    ToolButton { text: root.file-busy ? "Saving…" : "Save"; icon: Icons.save; accessible-label: "Save"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("save"); } }
+                    ToolButton { text: "Save as..."; icon: Icons.save-as; accessible-label: "Save as"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("save-as"); } }
+                    ToolButton { icon: Icons.more; compact: true; checked: root.more-menu-visible; accessible-label: "More actions"; clicked => { root.more-menu-visible = !root.more-menu-visible; if root.more-menu-visible { more-print.focus-item(); } } }
+
+
                 }
             }
             Rectangle { height: 1px; background: Theme.border; }
@@ -300,20 +479,20 @@ export component AppWindow inherits Window {
                 background: Theme.surface;
                 HorizontalLayout {
                     padding-left: Theme.space-m; padding-right: Theme.space-m; padding-top: 4px; padding-bottom: 4px; spacing: 6px;
-                    Button { text: "📄 Pages"; accessible-label: "Toggle page thumbnails"; enabled: root.ready; clicked => { root.action("thumbnails"); } }
-                    Button { text: "🔖 Bookmarks"; accessible-label: "Toggle bookmarks"; enabled: root.ready; clicked => { root.action("bookmarks"); } }
+                    ToolButton { text: "Pages"; icon: Icons.pages; compact: root.toolbar-narrow; accessible-label: "Toggle page thumbnails"; enabled: root.ready; clicked => { root.action("thumbnails"); } }
+                    ToolButton { text: "Bookmarks"; icon: Icons.bookmarks; compact: root.toolbar-narrow; accessible-label: "Toggle bookmarks"; enabled: root.ready; clicked => { root.action("bookmarks"); } }
                     Rectangle { width: 1px; background: Theme.border; }
-                    Button { text: "📋 Form"; accessible-label: "Toggle form panel"; checkable: true; checked: root.form-mode > 0; enabled: root.ready && !root.file-busy; clicked => { root.action(root.form-mode == 0 ? "form-fill" : "form-close"); } }
-                    Button { text: "📑 Manage pages"; accessible-label: "Manage pages"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("page-tools"); } }
-                    Button { text: "✎ Annotations"; accessible-label: "Annotations on this page"; enabled: root.ready && !root.file-busy; clicked => { root.action("annotation-list"); } }
+                    ToolButton { text: "Form"; icon: Icons.form; compact: root.toolbar-narrow; accessible-label: "Toggle form panel"; checkable: true; checked: root.form-mode > 0; enabled: root.ready && !root.file-busy; clicked => { root.action(root.form-mode == 0 ? "form-fill" : "form-close"); } }
+                    if root.toolbar-wide: ToolButton { text: "Manage pages"; icon: Icons.manage-pages; accessible-label: "Manage pages"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("page-tools"); } }
+                    if root.toolbar-wide: ToolButton { text: "Annotations"; icon: Icons.annotations; accessible-label: "Annotations on this page"; enabled: root.ready && !root.file-busy; clicked => { root.action("annotation-list"); } }
                     Rectangle { width: 1px; background: Theme.border; }
-                    Button { text: "🖍 Highlight"; accessible-label: "Highlight selection"; enabled: root.can-annotate && root.selection-single-page && root.selection-text != "" && !root.file-busy; clicked => { root.action("annotate-highlight"); } }
-                    Button { text: root.note-placement ? "✕ Cancel note" : "📝 Add note"; accessible-label: "Add note"; enabled: root.can-annotate && !root.file-busy; clicked => { if root.note-placement { root.action("cancel-note"); } else { root.action("annotate-note"); } } }
-                    Button { text: "↩ Undo"; accessible-label: "Undo"; enabled: root.can-undo && !root.file-busy; clicked => { root.action("undo"); } }
-                    Button { text: "↪ Redo"; accessible-label: "Redo"; enabled: root.can-redo && !root.file-busy; clicked => { root.action("redo"); } }
-                    Rectangle { horizontal-stretch: 1; }
-                    Text { visible: root.note-placement; text: "Click a page to place your note"; color: Theme.text-secondary; vertical-alignment: center; font-size: Theme.font-s; }
-                    Button { text: "🔍 Find"; accessible-label: "Find in document"; enabled: root.ready; clicked => { root.action("find"); } }
+                    ToolButton { text: "Highlight"; icon: Icons.highlight; compact: root.toolbar-narrow; accessible-label: "Highlight selection"; enabled: root.can-annotate && root.selection-single-page && root.selection-text != "" && !root.file-busy; clicked => { root.action("annotate-highlight"); } }
+                    ToolButton { text: root.note-placement ? "Cancel note" : "Add note"; icon: root.note-placement ? Icons.close : Icons.add-note; compact: root.toolbar-narrow; accessible-label: root.note-placement ? "Cancel note" : "Add note"; enabled: root.can-annotate && !root.file-busy; clicked => { if root.note-placement { root.action("cancel-note"); } else { root.action("annotate-note"); } } }
+                    ToolButton { text: "Undo"; icon: Icons.undo; compact: root.toolbar-narrow; accessible-label: "Undo"; enabled: root.can-undo && !root.file-busy; clicked => { root.action("undo"); } }
+                    ToolButton { text: "Redo"; icon: Icons.redo; compact: root.toolbar-narrow; accessible-label: "Redo"; enabled: root.can-redo && !root.file-busy; clicked => { root.action("redo"); } }
+                    Text { horizontal-stretch: 1; min-width: 0px; overflow: elide; horizontal-alignment: right; text: root.note-placement ? "Click a page to place your note" : ""; color: Theme.text-secondary; vertical-alignment: center; font-size: Theme.font-s; }
+
+                    ToolButton { text: "Find"; icon: Icons.find; compact: root.toolbar-narrow; accessible-label: "Find in document"; enabled: root.ready; clicked => { root.action("find"); } }
                 }
             }
             Rectangle { height: 1px; background: Theme.border; }
@@ -332,7 +511,7 @@ export component AppWindow inherits Window {
                         padding: 8px;
                         HorizontalLayout {
                             Text { text: "Bookmarks"; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; }
-                            Button { text: "✕"; accessible-label: "Close bookmarks"; clicked => { root.action("bookmarks"); } }
+                            ToolButton { icon: Icons.close; compact: true; accessible-label: "Close bookmarks"; clicked => { root.action("bookmarks"); } }
                         }
                         Text { text: root.bookmark-status; color: Theme.text-secondary; wrap: word-wrap; }
                         ScrollView {
@@ -355,7 +534,7 @@ export component AppWindow inherits Window {
                         HorizontalLayout {
                             padding: Theme.space-s; spacing: Theme.space-s;
                             Text { text: "Pages"; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; }
-                            Button { text: "✕"; accessible-label: "Close page thumbnails"; clicked => { root.action("thumbnails"); } }
+                            ToolButton { icon: Icons.close; compact: true; accessible-label: "Close page thumbnails"; clicked => { root.action("thumbnails"); } }
                         }
                     ScrollView {
                         vertical-stretch: 1;
@@ -384,19 +563,40 @@ export component AppWindow inherits Window {
                         padding: 12px; spacing: 8px;
                         HorizontalLayout {
                             Text { text: "Form"; font-size: 20px; font-weight: 700; color: Theme.text-primary; vertical-alignment: center; horizontal-stretch: 1; }
-                            Button { text: "✕"; accessible-label: "Close form panel"; enabled: !root.file-busy; clicked => { root.action("form-close"); } }
+                            ToolButton { icon: Icons.close; compact: true; accessible-label: "Close form panel"; enabled: !root.file-busy; clicked => { root.action("form-close"); } }
                         }
                         Text { text: "Click a field on the page and type. Tab moves to the next field."; wrap: word-wrap; color: Theme.text-secondary; font-size: Theme.font-s; }
                         Text { text: root.form-status; wrap: word-wrap; color: Theme.text-secondary; }
+                        if root.form-review-count > 0: Rectangle {
+                            height: 28px; background: Theme.warning-background; border-radius: Theme.radius-s;
+                            Text { x: 8px; width: parent.width - 16px; height: 100%; text: root.form-review-count == 1 ? "1 detected field needs review" : root.form-review-count + " detected fields need review"; color: Theme.warning; font-size: Theme.font-s; font-weight: 600; vertical-alignment: center; overflow: elide; }
+                        }
                         HorizontalLayout {
-                            Button { text: "Previous"; enabled: !root.file-busy; clicked => { root.action("form-previous"); } }
-                            Button { text: "Next"; enabled: !root.file-busy; clicked => { root.action("form-next"); } }
+                            spacing: 4px;
+                            ToolButton { text: "Previous"; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.action("form-previous"); } }
+                            ToolButton { text: "Next"; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.action("form-next"); } }
                         }
                         VerticalLayout {
-                            Text { text: "Field tools"; font-weight: 700; color: Theme.text-primary; }
-                            Text { text: "Field type"; color: Theme.text-secondary; }
-                            ComboBox { model: ["Text", "Multiline text", "Date", "Number", "Checkbox", "Radio button", "Dropdown", "List", "Visual signature", "Digital signature"]; current-index <=> root.form-kind; enabled: !root.file-busy; }
-                            Button { text: root.form-draw ? "Drawing — drag on page" : "Draw a new field"; enabled: root.can-edit-forms && !root.file-busy; clicked => { root.action("form-new"); } }
+                            spacing: 8px;
+                            Text { text: "Add a field"; font-weight: 700; color: Theme.text-primary; }
+                            HorizontalLayout {
+                                spacing: 4px;
+                                ToolButton { text: "Text"; checked: root.kind-group == 0; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.form-kind = 0; } }
+                                ToolButton { text: "Choice"; checked: root.kind-group == 1; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.form-kind = 4; } }
+                                ToolButton { text: "Signature"; checked: root.kind-group == 2; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.form-kind = 8; } }
+                            }
+                            VerticalLayout {
+                                spacing: 4px;
+                                for kind-name[kind-index] in root.kind-names: ToolButton {
+                                    height: 28px;
+                                    text: kind-name;
+                                    checked: root.form-kind == root.kind-start + kind-index;
+                                    enabled: !root.file-busy;
+                                    clicked => { root.form-kind = root.kind-start + kind-index; }
+                                }
+                            }
+                            ToolButton { text: root.form-draw ? "Drawing — drag on page" : "Draw a new field"; enabled: root.can-edit-forms && !root.file-busy; clicked => { root.action("form-new"); } }
+                            Text { text: "Field properties"; font-weight: 700; color: Theme.text-primary; }
                             Text { text: "Label"; color: Theme.text-secondary; }
                             LineEdit { text <=> root.form-label; enabled: !root.file-busy; }
                             CheckBox { text: "Required"; checked <=> root.form-required; }
@@ -406,20 +606,27 @@ export component AppWindow inherits Window {
                             if root.form-kind==5: LineEdit { text <=> root.form-group; placeholder-text: "Radio group name"; }
                             if root.form-kind==6 || root.form-kind==7: TextEdit { height: 80px; text <=> root.form-options-text; }
                             if root.form-selected: HorizontalLayout {
-                                Button { text: "Apply properties"; enabled: root.form-authorable && !root.file-busy; clicked => { root.action("form-properties"); } }
-                                Button { text: "Duplicate"; enabled: root.form-authorable && !root.file-busy; clicked => { root.action("form-duplicate"); } }
+                                spacing: 4px;
+                                ToolButton { text: "Apply properties"; horizontal-stretch: 1; enabled: root.form-authorable && !root.file-busy; clicked => { root.action("form-properties"); } }
+                                ToolButton { text: "Duplicate"; horizontal-stretch: 1; enabled: root.form-authorable && !root.file-busy; clicked => { root.action("form-duplicate"); } }
                             }
                             if root.form-selected: HorizontalLayout {
-                                Button { text: "Delete"; enabled: root.form-authorable && !root.file-busy; clicked => { root.action("form-delete"); } }
-                                Button { text: "Confirm field"; enabled: root.form-authorable && !root.file-busy; clicked => { root.action("form-confirm"); } }
+                                spacing: 4px;
+                                ToolButton { text: "Delete"; horizontal-stretch: 1; enabled: root.form-authorable && !root.file-busy; clicked => { root.action("form-delete"); } }
+                                ToolButton { text: "Confirm field"; horizontal-stretch: 1; enabled: root.form-authorable && !root.file-busy; clicked => { root.action("form-confirm"); } }
                             }
+                        }
+                        VerticalLayout {
+                            spacing: 8px;
+                            Text { text: "Detect fields"; font-weight: 700; color: Theme.text-primary; }
                             ComboBox { model: ["Current page", "Selected pages", "Whole document"]; current-index <=> root.form-scan-scope; enabled: !root.file-busy; }
                             if root.form-scan-scope==1: LineEdit { text <=> root.form-scan-pages; placeholder-text: "Pages, e.g. 1-3"; enabled: !root.file-busy; }
                             HorizontalLayout {
-                                Button { text: "Detect Fields"; enabled: !root.file-busy; clicked => { root.action("form-detect"); } }
-                                Button { text: "Review uncertain"; enabled: !root.file-busy; clicked => { root.action("form-review"); } }
+                                spacing: 4px;
+                                ToolButton { text: "Detect fields"; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.action("form-detect"); } }
+                                ToolButton { text: "Review uncertain"; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.action("form-review"); } }
                             }
-                            if root.form-detecting: Button { text: "Cancel detection"; clicked => {root.action("form-cancel-detection");} }
+                            if root.form-detecting: ToolButton { text: "Cancel detection"; clicked => {root.action("form-cancel-detection");} }
                         }
                         if root.form-selected: VerticalLayout {
                             Text { text: root.form-label=="" ? "Selected field" : root.form-label; wrap: word-wrap; font-weight: 600; color: Theme.text-primary; }
@@ -439,13 +646,13 @@ export component AppWindow inherits Window {
                             if root.form-value-kind==6: ComboBox { model: root.form-choice-labels; current-index <=> root.form-choice; enabled: root.form-editable && !root.file-busy; selected(value) => { root.action("form-choice"); } }
                             if root.form-value-kind==7: VerticalLayout { for option[index] in root.form-options: CheckBox { text: option.label; checked: option.selected; enabled: root.form-editable && !root.file-busy; toggled => {root.form-option(index,self.checked);} } }
                             if root.form-value-kind==8: VerticalLayout {
-                                Button { text: "Type visual signature"; enabled: root.form-editable && !root.file-busy; clicked => {root.action("form-sign-type");} }
-                                Button { text: "Draw visual signature"; enabled: root.form-editable && !root.file-busy; clicked => {root.action("form-sign-draw");} }
-                                Button { text: "Import signature image"; enabled: root.form-editable && !root.file-busy; clicked => {root.action("signature-import");} }
-                                Button { text: "Clear visual signature"; enabled: root.form-editable && !root.file-busy; clicked => {root.action("form-sign-clear");} }
+                                ToolButton { text: "Type visual signature"; enabled: root.form-editable && !root.file-busy; clicked => {root.action("form-sign-type");} }
+                                ToolButton { text: "Draw visual signature"; enabled: root.form-editable && !root.file-busy; clicked => {root.action("form-sign-draw");} }
+                                ToolButton { text: "Import signature image"; enabled: root.form-editable && !root.file-busy; clicked => {root.action("signature-import");} }
+                                ToolButton { text: "Clear visual signature"; enabled: root.form-editable && !root.file-busy; clicked => {root.action("form-sign-clear");} }
                             }
-                            if root.form-value-kind==9: Button { text: "Sign with certificate…"; enabled: root.form-signable && !root.file-busy; clicked => {root.action("certificate-select");} }
-                            if root.digital-signing: Button { text: "Cancel signing"; clicked => {root.action("form-digital-stop");} }
+                            if root.form-value-kind==9: ToolButton { text: "Sign with certificate…"; enabled: root.form-signable && !root.file-busy; clicked => {root.action("certificate-select");} }
+                            if root.digital-signing: ToolButton { text: "Cancel signing"; clicked => {root.action("form-digital-stop");} }
                         }
                     }
                     }
@@ -524,7 +731,7 @@ export component AppWindow inherits Window {
                         width: annotation.w * 1px; height: annotation.h * 1px;
                         background: annotation.kind == 1 ? #ffe475 : transparent;
                         border-radius: Theme.radius-s;
-                        if annotation.kind == 1: Text { text: "✎"; width: 100%; height: 100%; horizontal-alignment: center; vertical-alignment: center; color: #604900; }
+                        if annotation.kind == 1: Icon { d: Icons.pencil; tint: #604900; size: 14px; x: (parent.width - self.width) / 2; y: (parent.height - self.height) / 2; }
                         if annotation.kind != 0: TouchArea {
                             mouse-cursor: pointer;
                             accessible-role: AccessibleRole.button;
@@ -535,11 +742,18 @@ export component AppWindow inherits Window {
                     for field in root.form-surfaces: Rectangle {
                         visible: root.form-mode>0;
                         x: field.x * 1px; y: field.y * 1px; width: field.w * 1px; height: field.h * 1px;
-                        border-width: field.selected ? 2px : 1px;
-                        border-color: field.review ? #d68c00 : Theme.accent;
+                        border-width: field.selected || field.review ? 2px : 1px;
+                        border-color: field.review ? Theme.review : Theme.accent;
                         background: field.selected ? #469ef325 : #469ef310;
+                        if field.review: Rectangle {
+                            x: -2px; y: -18px; width: 54px; height: 16px;
+                            background: Theme.review; border-radius: Theme.radius-s;
+                            Text { width: 100%; height: 100%; text: "Review"; color: Theme.review-text; font-size: Theme.font-s; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+                        }
                         TouchArea {
                             mouse-cursor: pointer;
+                            accessible-role: AccessibleRole.button;
+                            accessible-label: field.label + (field.review ? ", needs review" : "");
                             clicked => { root.form-select(field.index); }
                             pointer-event(event) => {
                                 if event.button == PointerEventButton.right && event.kind == PointerEventKind.down {
@@ -631,9 +845,9 @@ export component AppWindow inherits Window {
                             }
                         }
                         Text { text: root.search-status; color: Theme.text-secondary; vertical-alignment: center; }
-                        Button { text: "Previous"; accessible-label: "Previous match"; clicked => { root.action("search-previous"); } }
-                        Button { text: "Next"; accessible-label: "Next match"; clicked => { root.action("search-next"); } }
-                        Button { text: "✕"; accessible-label: "Close search"; clicked => { root.action("search-close"); } }
+                        ToolButton { text: "Previous"; accessible-label: "Previous match"; clicked => { root.action("search-previous"); } }
+                        ToolButton { text: "Next"; accessible-label: "Next match"; clicked => { root.action("search-next"); } }
+                        ToolButton { icon: Icons.close; compact: true; accessible-label: "Close search"; clicked => { root.action("search-close"); } }
                     }
                 }
                 if !root.ready: VerticalLayout {
@@ -646,10 +860,10 @@ export component AppWindow inherits Window {
                     if root.password-required: HorizontalLayout {
                         alignment: center; spacing: 8px;
                         LineEdit { width: 250px; input-type: InputType.password; placeholder-text: "Document password"; text <=> root.password; accepted => { root.password-submit(self.text); } }
-                        Button { text: "Unlock"; clicked => { root.password-submit(root.password); } }
-                        Button { text: "Cancel"; clicked => { root.action("password-cancel"); } }
+                        ToolButton { text: "Unlock"; clicked => { root.password-submit(root.password); } }
+                        ToolButton { text: "Cancel"; clicked => { root.action("password-cancel"); } }
                     }
-                    if !root.password-required: Button { text: "Choose a PDF"; clicked => { root.action("open"); } }
+                    if !root.password-required: ToolButton { text: "Choose a PDF"; clicked => { root.action("open"); } }
                 }
             }
             }
@@ -660,17 +874,17 @@ export component AppWindow inherits Window {
                     padding-left: 12px; padding-right: 12px; padding-top: 4px; padding-bottom: 4px; spacing: 6px;
                     // Page navigation: arrows step one page, the label opens
                     // a drop-up page picker.
-                    Button { width: 24px; text: "‹"; accessible-label: "Previous page"; enabled: root.ready; clicked => { root.action("previous"); } }
-                    Button { text: "Page \{root.current-page-number} of \{root.page-count} ▴"; accessible-label: "Choose page"; enabled: root.ready; clicked => { root.page-menu-visible = !root.page-menu-visible; } }
-                    Button { width: 24px; text: "›"; accessible-label: "Next page"; enabled: root.ready; clicked => { root.action("next"); } }
+                    ToolButton { width: 30px; icon: Icons.chevron-left; compact: true; accessible-label: "Previous page"; enabled: root.ready; clicked => { root.action("previous"); } }
+                    ToolButton { text: "Page \{root.current-page-number} of \{root.page-count}"; trailing-icon: Icons.chevron-up; accessible-label: "Choose page"; enabled: root.ready; clicked => { root.page-menu-visible = !root.page-menu-visible; } }
+                    ToolButton { width: 30px; icon: Icons.chevron-right; compact: true; accessible-label: "Next page"; enabled: root.ready; clicked => { root.action("next"); } }
                     Rectangle { width: 1px; background: Theme.border; }
                     Text { text: root.ready ? root.status : "Offline • Viewer prototype"; color: Theme.text-secondary; font-size: 12px; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
                     // Compact zoom and view controls live in the status bar.
                     Rectangle { width: 1px; background: Theme.border; }
-                    Button { width: 26px; text: "−"; accessible-label: "Zoom out"; enabled: root.ready; clicked => { root.action("zoom-out"); } }
+                    ToolButton { width: 30px; icon: Icons.zoom-out; compact: true; accessible-label: "Zoom out"; enabled: root.ready; clicked => { root.action("zoom-out"); } }
                     Text { text: root.zoom-percent + "%"; width: 42px; horizontal-alignment: center; vertical-alignment: center; color: Theme.text-primary; font-size: 12px; }
-                    Button { width: 26px; text: "+"; accessible-label: "Zoom in"; enabled: root.ready; clicked => { root.action("zoom-in"); } }
-                    Button { visible: root.width >= 900px; text: root.fit-page ? "Fit page" : "Fit width"; accessible-label: "Toggle fit page or fit width"; checkable: true; checked: root.fit-page; enabled: root.ready; clicked => { root.action(root.fit-page ? "fit-width" : "fit-page"); } }
+                    ToolButton { width: 30px; icon: Icons.zoom-in; compact: true; accessible-label: "Zoom in"; enabled: root.ready; clicked => { root.action("zoom-in"); } }
+                    ToolButton { visible: root.width >= 900px; text: root.fit-page ? "Fit page" : "Fit width"; accessible-label: "Toggle fit page or fit width"; checkable: true; checked: root.fit-page; enabled: root.ready; clicked => { root.action(root.fit-page ? "fit-width" : "fit-page"); } }
                     ComboBox { width: 132px; model: ["Continuous", "Single page", "Facing pages"]; current-index <=> root.reading-mode; enabled: root.ready;
                         selected(index) => { root.action(index == 1 ? "view-single" : index == 2 ? "view-facing" : "view-continuous"); }
                     }
@@ -692,7 +906,7 @@ export component AppWindow inherits Window {
                 content-height: root.page-numbers.length * 34px + 16px;
                 VerticalLayout {
                     padding: Theme.space-s; spacing: Theme.space-xs;
-                    for number in root.page-numbers: Button {
+                    for number in root.page-numbers: ToolButton {
                         height: 30px;
                         text: "Page \{number}";
                         accessible-label: "Go to page \{number}";
@@ -714,18 +928,37 @@ export component AppWindow inherits Window {
             background: Theme.surface; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius;
             VerticalLayout {
                 padding: Theme.space-s; spacing: Theme.space-xs;
-                Button { height: 30px; text: "Copy"; accessible-label: "Copy selection"; enabled: root.can-copy && root.selection-text != ""; clicked => { root.context-visible = false; root.copy-selection(); } }
-                Button { height: 30px; text: "Select all"; accessible-label: "Select all text on this page"; enabled: root.ready && root.can-copy; clicked => { root.context-visible = false; root.action("select-all"); } }
-                Button { height: 30px; text: "Highlight selection"; accessible-label: "Highlight selection"; enabled: root.can-annotate && root.selection-single-page && root.selection-text != "" && !root.file-busy; clicked => { root.context-visible = false; root.action("annotate-highlight"); } }
-                Button { height: 30px; text: "Add note"; accessible-label: "Add note"; enabled: root.can-annotate && !root.file-busy; clicked => { root.context-visible = false; root.action("annotate-note"); } }
+                ToolButton { height: 30px; text: "Copy"; accessible-label: "Copy selection"; enabled: root.can-copy && root.selection-text != ""; clicked => { root.context-visible = false; root.copy-selection(); } }
+                ToolButton { height: 30px; text: "Select all"; accessible-label: "Select all text on this page"; enabled: root.ready && root.can-copy; clicked => { root.context-visible = false; root.action("select-all"); } }
+                ToolButton { height: 30px; text: "Highlight selection"; accessible-label: "Highlight selection"; enabled: root.can-annotate && root.selection-single-page && root.selection-text != "" && !root.file-busy; clicked => { root.context-visible = false; root.action("annotate-highlight"); } }
+                ToolButton { height: 30px; text: "Add note"; accessible-label: "Add note"; enabled: root.can-annotate && !root.file-busy; clicked => { root.context-visible = false; root.action("annotate-note"); } }
                 Rectangle { height: 1px; background: Theme.border; }
-                Button { height: 30px; text: "Zoom in"; accessible-label: "Zoom in"; enabled: root.ready; clicked => { root.context-visible = false; root.action("zoom-in"); } }
-                Button { height: 30px; text: "Zoom out"; accessible-label: "Zoom out"; enabled: root.ready; clicked => { root.context-visible = false; root.action("zoom-out"); } }
-                Button { height: 30px; text: root.fit-page ? "Fit width" : "Fit page"; accessible-label: "Toggle fit page or fit width"; enabled: root.ready; clicked => { root.context-visible = false; root.action(root.fit-page ? "fit-width" : "fit-page"); } }
+                ToolButton { height: 30px; text: "Zoom in"; accessible-label: "Zoom in"; enabled: root.ready; clicked => { root.context-visible = false; root.action("zoom-in"); } }
+                ToolButton { height: 30px; text: "Zoom out"; accessible-label: "Zoom out"; enabled: root.ready; clicked => { root.context-visible = false; root.action("zoom-out"); } }
+                ToolButton { height: 30px; text: root.fit-page ? "Fit width" : "Fit page"; accessible-label: "Toggle fit page or fit width"; enabled: root.ready; clicked => { root.context-visible = false; root.action(root.fit-page ? "fit-width" : "fit-page"); } }
                 Rectangle { height: 1px; background: Theme.border; }
-                Button { height: 30px; text: "Previous page"; accessible-label: "Previous page"; enabled: root.ready; clicked => { root.context-visible = false; root.action("previous"); } }
-                Button { height: 30px; text: "Next page"; accessible-label: "Next page"; enabled: root.ready; clicked => { root.context-visible = false; root.action("next"); } }
-                Button { height: 30px; text: "Print..."; accessible-label: "Print"; enabled: root.ready && !root.file-busy; clicked => { root.context-visible = false; root.action("print"); } }
+                ToolButton { height: 30px; text: "Previous page"; accessible-label: "Previous page"; enabled: root.ready; clicked => { root.context-visible = false; root.action("previous"); } }
+                ToolButton { height: 30px; text: "Next page"; accessible-label: "Next page"; enabled: root.ready; clicked => { root.context-visible = false; root.action("next"); } }
+                ToolButton { height: 30px; text: "Print..."; accessible-label: "Print"; enabled: root.ready && !root.file-busy; clicked => { root.context-visible = false; root.action("print"); } }
+            }
+        }
+    }
+    // More menu: low-frequency actions that do not fit the toolbar at the current width.
+    Rectangle {
+        visible: root.more-menu-visible;
+        width: 100%; height: 100%;
+        TouchArea { clicked => { root.more-menu-visible = false; } }
+        Rectangle {
+            x: parent.width - self.width - 8px; y: 46px;
+            width: 220px; height: root.toolbar-wide ? 84px : 161px;
+            background: Theme.surface; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius;
+            VerticalLayout {
+                padding: Theme.space-s; spacing: Theme.space-xs;
+                more-print := MenuItem { text: "Print"; icon: Icons.print; hint: "Ctrl+P"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.more-menu-visible = false; root.action("print"); root.focus-document(); } }
+                MenuItem { text: root.dark-mode ? "Light mode" : "Dark mode"; icon: root.dark-mode ? Icons.sun : Icons.moon; clicked => { root.more-menu-visible = false; root.dark-mode = !root.dark-mode; root.focus-document(); } }
+                if !root.toolbar-wide: Rectangle { height: 1px; background: Theme.border; }
+                if !root.toolbar-wide: MenuItem { text: "Manage pages"; icon: Icons.manage-pages; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.more-menu-visible = false; root.action("page-tools"); } }
+                if !root.toolbar-wide: MenuItem { text: "Annotations"; icon: Icons.annotations; enabled: root.ready && !root.file-busy; clicked => { root.more-menu-visible = false; root.action("annotation-list"); } }
             }
         }
     }
@@ -779,12 +1012,12 @@ export component AppWindow inherits Window {
                 }
                 HorizontalLayout {
                     alignment: end; spacing: 8px;
-                    if root.pending-open: Button { text: "Cancel"; clicked => { root.action("pending-cancel"); } }
-                    if root.pending-open: Button { text: "Discard"; clicked => { root.action("pending-discard"); } }
-                    if root.pending-open: Button { text: root.file-busy ? "Saving…" : "Save"; enabled: !root.file-busy; clicked => { root.action("pending-save"); } }
-                    if !root.pending-open: Button { text: root.note-read-only ? "Close" : "Cancel"; clicked => { root.action("cancel-note"); } }
-                    if root.note-visible && root.annotation-editable && !root.note-read-only: Button { text: "Delete"; enabled: !root.file-busy; clicked => { root.action("delete-annotation"); } }
-                    if !root.pending-open && !root.note-read-only: Button { text: "Save note"; enabled: root.note-text != "" && !root.file-busy; clicked => { root.note-submit(root.note-text); } }
+                    if root.pending-open: ToolButton { text: "Cancel"; clicked => { root.action("pending-cancel"); } }
+                    if root.pending-open: ToolButton { text: "Discard"; clicked => { root.action("pending-discard"); } }
+                    if root.pending-open: ToolButton { text: root.file-busy ? "Saving…" : "Save"; enabled: !root.file-busy; clicked => { root.action("pending-save"); } }
+                    if !root.pending-open: ToolButton { text: root.note-read-only ? "Close" : "Cancel"; clicked => { root.action("cancel-note"); } }
+                    if root.note-visible && root.annotation-editable && !root.note-read-only: ToolButton { text: "Delete"; enabled: !root.file-busy; clicked => { root.action("delete-annotation"); } }
+                    if !root.pending-open && !root.note-read-only: ToolButton { text: "Save note"; enabled: root.note-text != "" && !root.file-busy; clicked => { root.note-submit(root.note-text); } }
                 }
             }
         }
@@ -808,32 +1041,32 @@ export component AppWindow inherits Window {
                 Text { text: "Use page numbers or ranges, such as 1-3,5. Rotate, delete, and extract use this range."; wrap: word-wrap; color: Theme.text-secondary; font-size: 12px; }
                 HorizontalLayout {
                     spacing: 8px;
-                    Button { text: "Rotate left"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("rotate-left"); } }
-                    Button { text: "Rotate right"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("rotate-right"); } }
-                    Button { text: "Delete pages"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("delete-pages"); } }
+                    ToolButton { text: "Rotate left"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("rotate-left"); } }
+                    ToolButton { text: "Rotate right"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("rotate-right"); } }
+                    ToolButton { text: "Delete pages"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("delete-pages"); } }
                 }
                 HorizontalLayout {
                     spacing: 8px;
                     Text { text: "Move current page to"; vertical-alignment: center; color: Theme.text-secondary; }
                     LineEdit { text <=> root.move-to; placeholder-text: "Page number"; width: 110px; enabled: root.can-assemble && !root.file-busy; }
-                    Button { text: "Move"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("move-page"); } }
+                    ToolButton { text: "Move"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("move-page"); } }
                 }
                 HorizontalLayout {
                     spacing: 8px;
-                    Button { text: "Insert PDF…"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("insert-pdf"); } }
-                    Button { text: "Merge PDF…"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("merge-pdf"); } }
-                    Button { text: "Blank page"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("blank-page"); } }
+                    ToolButton { text: "Insert PDF…"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("insert-pdf"); } }
+                    ToolButton { text: "Merge PDF…"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("merge-pdf"); } }
+                    ToolButton { text: "Blank page"; enabled: root.can-assemble && !root.file-busy; clicked => { root.action("blank-page"); } }
                 }
                 Text { text: "Insert PDF and blank page add after the current page. Merge appends a PDF. Split makes two PDFs after the current page."; wrap: word-wrap; color: Theme.text-secondary; font-size: 12px; }
                 HorizontalLayout {
                     spacing: 8px;
-                    Button { text: "Extract pages…"; enabled: root.can-copy && root.can-assemble && !root.file-busy; clicked => { root.action("extract-pages"); } }
-                    Button { text: "Split PDF…"; enabled: root.can-copy && root.can-assemble && !root.file-busy; clicked => { root.action("split-pdf"); } }
+                    ToolButton { text: "Extract pages…"; enabled: root.can-copy && root.can-assemble && !root.file-busy; clicked => { root.action("extract-pages"); } }
+                    ToolButton { text: "Split PDF…"; enabled: root.can-copy && root.can-assemble && !root.file-busy; clicked => { root.action("split-pdf"); } }
                 }
                 if root.file-message != "": Text { text: root.file-message; wrap: word-wrap; color: Theme.warning; font-size: 12px; }
                 }
                 }
-                HorizontalLayout { alignment: end; Button { text: root.file-busy ? "Working…" : "Close"; enabled: !root.file-busy; clicked => { root.action("close-page-tools"); } } }
+                HorizontalLayout { alignment: end; ToolButton { text: root.file-busy ? "Working…" : "Close"; enabled: !root.file-busy; clicked => { root.action("close-page-tools"); } } }
             }
         }
         Rectangle {
@@ -847,16 +1080,16 @@ export component AppWindow inherits Window {
                 Text { text: root.annotation-editable ? "Choose a color or delete this highlight." : "This highlight is read-only."; wrap: word-wrap; color: Theme.text-secondary; }
                 HorizontalLayout {
                     spacing: 8px;
-                    Button { text: "Yellow"; enabled: root.annotation-editable && !root.file-busy; clicked => { root.action("highlight-yellow"); } }
-                    Button { text: "Green"; enabled: root.annotation-editable && !root.file-busy; clicked => { root.action("highlight-green"); } }
-                    Button { text: "Blue"; enabled: root.annotation-editable && !root.file-busy; clicked => { root.action("highlight-blue"); } }
-                    Button { text: "Pink"; enabled: root.annotation-editable && !root.file-busy; clicked => { root.action("highlight-pink"); } }
+                    ToolButton { text: "Yellow"; enabled: root.annotation-editable && !root.file-busy; clicked => { root.action("highlight-yellow"); } }
+                    ToolButton { text: "Green"; enabled: root.annotation-editable && !root.file-busy; clicked => { root.action("highlight-green"); } }
+                    ToolButton { text: "Blue"; enabled: root.annotation-editable && !root.file-busy; clicked => { root.action("highlight-blue"); } }
+                    ToolButton { text: "Pink"; enabled: root.annotation-editable && !root.file-busy; clicked => { root.action("highlight-pink"); } }
                 }
                 if root.file-message != "": Text { text: root.file-message; wrap: word-wrap; color: Theme.warning; font-size: 12px; }
                 HorizontalLayout {
                     alignment: end; spacing: 8px;
-                    if root.annotation-editable: Button { text: "Delete"; enabled: !root.file-busy; clicked => { root.action("delete-annotation"); } }
-                    Button { text: "Close"; clicked => { root.action("cancel-highlight"); } }
+                    if root.annotation-editable: ToolButton { text: "Delete"; enabled: !root.file-busy; clicked => { root.action("delete-annotation"); } }
+                    ToolButton { text: "Close"; clicked => { root.action("cancel-highlight"); } }
                 }
             }
         }
@@ -873,7 +1106,7 @@ export component AppWindow inherits Window {
                     vertical-stretch: 1;
                     VerticalLayout {
                         spacing: 6px;
-                        for item in root.annotation-items: Button {
+                        for item in root.annotation-items: ToolButton {
                             text: item.label + (item.editable ? "" : " (read-only)");
                             enabled: !root.file-busy;
                             clicked => { root.annotation-click(item.index); }
@@ -882,7 +1115,7 @@ export component AppWindow inherits Window {
                     }
                 }
                 if root.file-message != "": Text { text: root.file-message; wrap: word-wrap; color: Theme.warning; font-size: 12px; }
-                HorizontalLayout { alignment: end; Button { text: "Close"; clicked => { root.action("close-annotations"); } } }
+                HorizontalLayout { alignment: end; ToolButton { text: "Close"; clicked => { root.action("close-annotations"); } } }
             }
         }
         }
@@ -912,10 +1145,10 @@ export component AppWindow inherits Window {
                 }
                 Text { text: root.form-status; wrap: word-wrap; color: Theme.warning; font-size: 12px; }
                 HorizontalLayout {
-                    Button { text: "Clear preview"; enabled: !root.file-busy; clicked => {root.action("form-sign-reset");} }
+                    ToolButton { text: "Clear preview"; enabled: !root.file-busy; clicked => {root.action("form-sign-reset");} }
                     Rectangle { horizontal-stretch: 1; }
-                    Button { text: "Cancel"; clicked => {root.action("form-sign-cancel");} }
-                    Button { text: "Place signature"; enabled: !root.file-busy; clicked => {root.action("form-sign-apply");} }
+                    ToolButton { text: "Cancel"; clicked => {root.action("form-sign-cancel");} }
+                    ToolButton { text: "Place signature"; enabled: !root.file-busy; clicked => {root.action("form-sign-apply");} }
                 }
             }
         }
@@ -936,8 +1169,8 @@ export component AppWindow inherits Window {
                 LineEdit { text <=> root.digital-password; input-type: InputType.password; placeholder-text: "PKCS#12 certificate password"; key-pressed(event)=>{if event.text==Key.Escape{root.action("form-digital-cancel");return accept;}return reject;} accepted => {root.action("form-digital-apply");} }
                 Text { text: "Signature integrity will be checked. Certificate trust and revocation are not checked."; wrap: word-wrap; color: Theme.text-secondary; }
                 HorizontalLayout { alignment: end;
-                    Button { text: "Cancel"; clicked => {root.action("form-digital-cancel");} }
-                    Button { text: "Sign PDF"; clicked => {root.action("form-digital-apply");} }
+                    ToolButton { text: "Cancel"; clicked => {root.action("form-digital-cancel");} }
+                    ToolButton { text: "Sign PDF"; clicked => {root.action("form-digital-apply");} }
                 }
             }
         }

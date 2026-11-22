@@ -1287,6 +1287,14 @@ impl State {
                 })
             })
             .collect::<Vec<_>>();
+        let review_count = self
+            .forms
+            .records
+            .values()
+            .flatten()
+            .filter(|f| f.spec.review)
+            .count();
+        ui.set_form_review_count(review_count as i32);
         if *self.forms.last_surfaces.borrow() == surfaces {
             return;
         }
