@@ -27,6 +27,9 @@ Copy-Item -LiteralPath (Join-Path $root 'assets/signatures/OFL.txt') -Destinatio
 Copy-Item -LiteralPath $Executable -Destination (Join-Path $destinationPath 'pdfree.exe')
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'register-pdfree.ps1') -Destination $destinationPath
 foreach ($file in @('README.md','LICENSE','THIRD_PARTY_NOTICES.md','Cargo.lock')) { Copy-Item -LiteralPath $file -Destination $destinationPath }
+$brandDestination = Join-Path $destinationPath 'assets'
+$null = New-Item -ItemType Directory -Force -Path $brandDestination
+Copy-Item -LiteralPath 'assets/pdfree-logo.svg','assets/favicon.svg' -Destination $brandDestination
 Copy-Item -LiteralPath 'docs' -Destination $destinationPath -Recurse -Force
 $benchmarkDestination = Join-Path $destinationPath 'benchmarks'
 $null = New-Item -ItemType Directory -Force -Path $benchmarkDestination

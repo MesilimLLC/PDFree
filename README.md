@@ -1,5 +1,7 @@
 # PDFree
 
+<img src="assets/pdfree-logo.svg" alt="PDFree logo" width="96" height="96">
+
 An offline Windows 11 x64 PDF viewer, form editor, and annotation prototype built with Rust, Slint, and MuPDF. It opens real PDFs with a virtualized continuous viewport, asynchronous clipped rendering, page navigation, and zoom/fit controls.
 
 ## Build and run
