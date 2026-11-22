@@ -93,7 +93,7 @@ jobs:
         shell: pwsh
         run: |
           $executable = (Resolve-Path -LiteralPath './dist/PDFree/pdfree.exe').Path
-          $process = Start-Process -FilePath $executable -ArgumentList '--help' -Wait -PassThru
+          $process = Start-Process -FilePath $executable -ArgumentList '--help' -Wait -PassThru -NoNewWindow
           if ($process.ExitCode -ne 0) { throw "Packaged pdfree.exe --help exited with $($process.ExitCode)" }
 
       - name: Zip the package and record its checksum
