@@ -23,6 +23,8 @@ pub(crate) struct Forms {
     close_after_commit: bool,
     open_after_commit: Option<std::path::PathBuf>,
     review_pages: std::collections::VecDeque<usize>,
+    // (document, revision) of the last full-document review count requested.
+    review_requested: Option<(u64, u64)>,
     signature_strokes: Vec<Vec<[f32; 2]>>,
     signature_image: Option<Vec<u8>>,
     signature_pending: bool,
@@ -1144,6 +1146,14 @@ impl State {
                 ui.set_form_surfaces(ModelRc::default());
                 true
             }
+            Event::ReviewCount {
+                document,
+                revision,
+                count,
+            } if *document == self.document.document && *revision == self.editor.revision => {
+                ui.set_form_review_count(*count as i32);
+                true
+            }
             Event::Forms {
                 document,
                 revision,
@@ -1245,6 +1255,12 @@ impl State {
         if ui.get_form_mode() == 0 {
             return;
         }
+        // One full-document count per revision; the engine answers asynchronously.
+        let request = (self.document.document, self.editor.revision);
+        if self.forms.review_requested != Some(request) {
+            self.forms.review_requested = Some(request);
+            self.engine.review_count(request.0, request.1);
+        }
         let wanted = pages.iter().copied().take(16).collect::<Vec<_>>();
         if wanted != self.forms.wanted {
             let selected_page = self.forms.selected.map(|id| id.page);
@@ -1288,16 +1304,6 @@ impl State {
                 })
             })
             .collect::<Vec<_>>();
-        // Counts only the records currently loaded; the document-wide total is not tracked here,
-        // so the UI label says "on loaded pages".
-        let review_count = self
-            .forms
-            .records
-            .values()
-            .flatten()
-            .filter(|f| f.spec.review)
-            .count();
-        ui.set_form_review_count(review_count as i32);
         if *self.forms.last_surfaces.borrow() == surfaces {
             return;
         }

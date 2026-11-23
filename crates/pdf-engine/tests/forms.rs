@@ -315,3 +315,36 @@ fn print_copy_writes_the_edited_document_without_switching_to_it() {
     drop(e);
     std::fs::remove_file(output).unwrap();
 }
+
+#[test]
+fn review_count_scans_the_whole_document_for_the_requested_revision() {
+    let e = Engine::spawn(1);
+    e.open(
+        1,
+        1,
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../tests/corpus/blank.pdf"),
+    );
+    wait(&e, |v| matches!(v, Event::Opened { .. }));
+    let mut flagged = field(FieldKind::Text, "flagged", 40.);
+    flagged.review = true;
+    let plain = field(FieldKind::Text, "plain", 80.);
+    assert!(e.edit(
+        1,
+        0,
+        1,
+        2,
+        EditCommand::Form(FormEdit::Create(vec![flagged, plain]))
+    ));
+    let rev = changed(&e);
+    // No page has been requested through form_pages: the count must not depend on it.
+    e.review_count(1, rev);
+    match wait(&e, |v| matches!(v, Event::ReviewCount { .. })) {
+        Event::ReviewCount {
+            revision, count, ..
+        } => {
+            assert_eq!(revision, rev);
+            assert_eq!(count, 1);
+        }
+        _ => unreachable!(),
+    }
+}

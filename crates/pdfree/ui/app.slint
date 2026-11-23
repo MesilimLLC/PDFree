@@ -571,7 +571,7 @@ export component AppWindow inherits Window {
                         Text { text: root.form-status; wrap: word-wrap; color: Theme.text-secondary; }
                         if root.form-review-count > 0: Rectangle {
                             height: 28px; background: Theme.warning-background; border-radius: Theme.radius-s;
-                            Text { x: 8px; width: parent.width - 16px; height: 100%; text: root.form-review-count == 1 ? "1 detected field on loaded pages needs review" : root.form-review-count + " detected fields on loaded pages need review"; color: Theme.warning; font-size: Theme.font-s; font-weight: 600; vertical-alignment: center; overflow: elide; }
+                            Text { x: 8px; width: parent.width - 16px; height: 100%; text: root.form-review-count == 1 ? "1 detected field needs review" : root.form-review-count + " detected fields need review"; color: Theme.warning; font-size: Theme.font-s; font-weight: 600; vertical-alignment: center; overflow: elide; }
                         }
                         HorizontalLayout {
                             spacing: 4px;
@@ -960,6 +960,12 @@ export component AppWindow inherits Window {
                 width: parent.width; height: parent.height;
                 key-pressed(event) => {
                     if event.text == Key.Escape { root.more-menu-visible = false; more-btn.focus-button(); return accept; }
+                    // The Print shortcut shown in this menu: rejected keys only bubble to ancestors,
+                    // so the sibling `keys` scope would never see it while a menu item has focus.
+                    if event.modifiers.control && (event.text == "p" || event.text == "P") {
+                        if root.ready && !root.file-busy && !root.rename-active { root.more-menu-visible = false; root.action("print"); root.focus-document(); }
+                        return accept;
+                    }
                     return reject;
                 }
                 VerticalLayout {

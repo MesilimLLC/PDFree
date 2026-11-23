@@ -191,6 +191,11 @@ pub enum Event {
         page: usize,
         fields: Vec<viewer_core::FormField>,
     },
+    ReviewCount {
+        document: u64,
+        revision: u64,
+        count: usize,
+    },
     Outlines {
         document: u64,
         revision: u64,
@@ -308,6 +313,7 @@ struct View {
 #[derive(Default)]
 struct Desired {
     forms: Option<(u64, u64, Vec<usize>)>,
+    review_count: Option<(u64, u64)>,
     outlines: Option<(u64, u64)>,
     links: Option<(u64, u64, Vec<usize>)>,
     annotations: Option<(u64, u64, Vec<usize>)>,
@@ -426,6 +432,12 @@ impl Engine {
                 .take(crate::constants::MAX_FORM_PAGES)
                 .collect(),
         ));
+        let _ = self.wake.try_send(());
+    }
+    /// Count review-flagged fields across every page of the document at `revision`.
+    /// The result arrives as `Event::ReviewCount`; a newer request supersedes an older one.
+    pub fn review_count(&self, document: u64, revision: u64) {
+        self.shared.desired.lock().unwrap().review_count = Some((document, revision));
         let _ = self.wake.try_send(());
     }
     pub fn links_pages(&self, document: u64, revision: u64, pages: Vec<usize>) {
