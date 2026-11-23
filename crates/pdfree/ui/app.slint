@@ -467,7 +467,7 @@ export component AppWindow inherits Window {
                     ToolButton { text: "Open"; icon: Icons.open; accessible-label: "Open PDF"; enabled: !root.file-busy && !root.rename-active; clicked => { root.action("open"); } }
                     ToolButton { text: root.file-busy ? "Saving…" : "Save"; icon: Icons.save; accessible-label: "Save"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("save"); } }
                     ToolButton { text: "Save as..."; icon: Icons.save-as; accessible-label: "Save as"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.action("save-as"); } }
-                    ToolButton { icon: Icons.more; compact: true; checked: root.more-menu-visible; accessible-label: "More actions"; clicked => { root.more-menu-visible = !root.more-menu-visible; if root.more-menu-visible { more-print.focus-item(); } } }
+                    more-btn := ToolButton { icon: Icons.more; compact: true; checkable: true; checked: root.more-menu-visible; accessible-label: "More actions"; clicked => { root.more-menu-visible = !root.more-menu-visible; if root.more-menu-visible { more-print.focus-item(); } } }
 
 
                 }
@@ -569,7 +569,7 @@ export component AppWindow inherits Window {
                         Text { text: root.form-status; wrap: word-wrap; color: Theme.text-secondary; }
                         if root.form-review-count > 0: Rectangle {
                             height: 28px; background: Theme.warning-background; border-radius: Theme.radius-s;
-                            Text { x: 8px; width: parent.width - 16px; height: 100%; text: root.form-review-count == 1 ? "1 detected field needs review" : root.form-review-count + " detected fields need review"; color: Theme.warning; font-size: Theme.font-s; font-weight: 600; vertical-alignment: center; overflow: elide; }
+                            Text { x: 8px; width: parent.width - 16px; height: 100%; text: root.form-review-count == 1 ? "1 detected field on loaded pages needs review" : root.form-review-count + " detected fields on loaded pages need review"; color: Theme.warning; font-size: Theme.font-s; font-weight: 600; vertical-alignment: center; overflow: elide; }
                         }
                         HorizontalLayout {
                             spacing: 4px;
@@ -952,13 +952,22 @@ export component AppWindow inherits Window {
             x: parent.width - self.width - 8px; y: 46px;
             width: 220px; height: root.toolbar-wide ? 84px : 161px;
             background: Theme.surface; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius;
-            VerticalLayout {
-                padding: Theme.space-s; spacing: Theme.space-xs;
-                more-print := MenuItem { text: "Print"; icon: Icons.print; hint: "Ctrl+P"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.more-menu-visible = false; root.action("print"); root.focus-document(); } }
-                MenuItem { text: root.dark-mode ? "Light mode" : "Dark mode"; icon: root.dark-mode ? Icons.sun : Icons.moon; clicked => { root.more-menu-visible = false; root.dark-mode = !root.dark-mode; root.focus-document(); } }
-                if !root.toolbar-wide: Rectangle { height: 1px; background: Theme.border; }
-                if !root.toolbar-wide: MenuItem { text: "Manage pages"; icon: Icons.manage-pages; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.more-menu-visible = false; root.action("page-tools"); } }
-                if !root.toolbar-wide: MenuItem { text: "Annotations"; icon: Icons.annotations; enabled: root.ready && !root.file-busy; clicked => { root.more-menu-visible = false; root.action("annotation-list"); } }
+            // Encloses the items so an Escape pressed on a focused item bubbles here and closes the menu.
+            more-keys := FocusScope {
+                width: parent.width; height: parent.height;
+                key-pressed(event) => {
+                    if event.text == Key.Escape { root.more-menu-visible = false; more-btn.focus-button(); return accept; }
+                    return reject;
+                }
+                VerticalLayout {
+                    width: parent.width; height: parent.height;
+                    padding: Theme.space-s; spacing: Theme.space-xs;
+                    more-print := MenuItem { text: "Print"; icon: Icons.print; hint: "Ctrl+P"; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.more-menu-visible = false; root.action("print"); root.focus-document(); } }
+                    MenuItem { text: root.dark-mode ? "Light mode" : "Dark mode"; icon: root.dark-mode ? Icons.sun : Icons.moon; clicked => { root.more-menu-visible = false; root.dark-mode = !root.dark-mode; root.focus-document(); } }
+                    if !root.toolbar-wide: Rectangle { height: 1px; background: Theme.border; }
+                    if !root.toolbar-wide: MenuItem { text: "Manage pages"; icon: Icons.manage-pages; enabled: root.ready && !root.file-busy && !root.rename-active; clicked => { root.more-menu-visible = false; root.action("page-tools"); } }
+                    if !root.toolbar-wide: MenuItem { text: "Annotations"; icon: Icons.annotations; enabled: root.ready && !root.file-busy; clicked => { root.more-menu-visible = false; root.action("annotation-list"); } }
+                }
             }
         }
     }

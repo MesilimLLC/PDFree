@@ -1287,6 +1287,8 @@ impl State {
                 })
             })
             .collect::<Vec<_>>();
+        // Counts only the records currently loaded; the document-wide total is not tracked here,
+        // so the UI label says "on loaded pages".
         let review_count = self
             .forms
             .records
