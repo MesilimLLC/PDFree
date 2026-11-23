@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-22T00:00:00Z",
+  "title": "Design System: PDFree",
+  "extensions": {
+    "colorMeta": {
+      "accent": { "role": "primary", "displayName": "Workbench Blue", "canonical": "#146bca", "tonalRamp": ["#011129", "#032852", "#0a4689", "#1367c3", "#538ed8", "#8db4e7", "#c0d6f3", "#e7effb"] },
+      "accent-dark": { "role": "primary", "displayName": "Workbench Blue (dark)", "canonical": "#5aa2e8", "tonalRamp": ["#06121f", "#132a41", "#264a6d", "#3a6c9d", "#5091d0", "#7fb6ee", "#bad8f7", "#e4f0fc"] },
+      "text-primary": { "role": "neutral", "displayName": "Ink Navy", "canonical": "#223b54", "tonalRamp": ["#08121e", "#172a3e", "#334a61", "#586b7f", "#7f8e9e", "#a8b2bd", "#cfd5db", "#eceff1"] },
+      "text-primary-dark": { "role": "neutral", "displayName": "Ink Navy (dark)", "canonical": "#e6edf5", "tonalRamp": ["#111213", "#27292b", "#45484b", "#66696d", "#888d92", "#acb2b8", "#cfd5dc", "#e9eff6"] },
+      "canvas": { "role": "neutral", "displayName": "Harbour Canvas", "canonical": "#e6ebf1", "tonalRamp": ["#111212", "#28292a", "#46484a", "#67696c", "#898c90", "#aeb1b6", "#d0d5da", "#ebeff4"] },
+      "warning": { "role": "warning", "displayName": "Amber Notice", "canonical": "#805715", "tonalRamp": ["#1b0f01", "#392405", "#60400d", "#876027", "#a5865e", "#c3ad92", "#ded2c3", "#f2eee8"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Empty-state heading when no document is open." },
+      "title": { "displayName": "Title", "purpose": "Panel headings such as Form, Bookmarks and Pages." },
+      "dialog-title": { "displayName": "Dialog title", "purpose": "Modal headings." },
+      "wordmark": { "displayName": "Wordmark", "purpose": "The PDFree name in the first toolbar row." },
+      "body": { "displayName": "Body", "purpose": "Buttons, labels and field values." },
+      "label": { "displayName": "Label", "purpose": "Status text, zoom readout, hints and small notices." }
+    },
+    "shadows": [],
+    "motion": [],
+    "breakpoints": [
+      { "name": "fit-toggle", "value": "900px", "purpose": "Fit width / Fit page toggle appears at this window width and above." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Toolbar button",
+      "kind": "button",
+      "refersTo": "toolbar-bar",
+      "description": "Slint standard button in the toolbar rows; takes the platform palette, no custom fill.",
+      "html": "<button class=\"ds-toolbar-btn\">Save</button>",
+      "css": ".ds-toolbar-btn { background: #ffffff; color: #223b54; border: 1px solid #dbe3ec; border-radius: 4px; padding: 4px 12px; font-size: 14px; font-family: inherit; } .ds-toolbar-btn:hover { background: #f4f6f9; } .ds-toolbar-btn:focus-visible { outline: 2px solid #146bca; outline-offset: 1px; } .ds-toolbar-btn:disabled { color: #9db0c3; }"
+    },
+    {
+      "name": "Floating search",
+      "kind": "custom",
+      "refersTo": "floating-search",
+      "description": "Search bar floating over the document, centred at the top of the viewport.",
+      "html": "<div class=\"ds-search\"><input class=\"ds-search-input\" placeholder=\"Find in document\"><span class=\"ds-search-status\">3 of 12</span></div>",
+      "css": ".ds-search { display: flex; align-items: center; gap: 8px; width: 580px; max-width: 100%; height: 44px; padding: 8px; box-sizing: border-box; background: #ffffff; border: 1px solid #dbe3ec; border-radius: 8px; } .ds-search-input { flex: 1; height: 28px; border: 1px solid #dbe3ec; border-radius: 4px; padding: 0 8px; font-size: 14px; color: #223b54; } .ds-search-input:focus-visible { outline: 2px solid #146bca; outline-offset: 0; } .ds-search-status { font-size: 12px; color: #526171; }"
+    },
+    {
+      "name": "Modal dialog",
+      "kind": "custom",
+      "refersTo": "modal-dialog",
+      "description": "Decision dialog centred over a dimmed scrim, used for unsaved changes, notes and page tools.",
+      "html": "<div class=\"ds-modal\"><div class=\"ds-modal-title\">Save your changes?</div><p class=\"ds-modal-body\">This PDF has unsaved changes.</p><div class=\"ds-modal-actions\"><button>Cancel</button><button>Discard</button><button>Save</button></div></div>",
+      "css": ".ds-modal { width: 520px; max-width: 100%; padding: 20px; box-sizing: border-box; background: #ffffff; border-radius: 8px; border: 1px solid #dbe3ec; display: flex; flex-direction: column; gap: 14px; } .ds-modal-title { font-size: 21px; font-weight: 600; color: #223b54; } .ds-modal-body { margin: 0; font-size: 14px; color: #526171; } .ds-modal-actions { display: flex; justify-content: flex-end; gap: 8px; }"
+    },
+    {
+      "name": "Form field overlay",
+      "kind": "custom",
+      "refersTo": "viewport",
+      "description": "Tinted overlay on a detected or authored form field; selected fields get a stronger outline.",
+      "html": "<div class=\"ds-field\"></div><div class=\"ds-field ds-field-selected\"></div><div class=\"ds-field ds-field-review\"></div>",
+      "css": ".ds-field { background: rgba(70,158,243,0.063); border: 1px solid #146bca; border-radius: 0; box-sizing: border-box; width: 160px; height: 24px; margin-bottom: 8px; } .ds-field-selected { background: rgba(70,158,243,0.145); border-width: 2px; } .ds-field-review { border-color: #d68c00; }"
+    },
+    {
+      "name": "Page sheet",
+      "kind": "custom",
+      "refersTo": "page-sheet",
+      "description": "The document page on the canvas. Always white, sharp-cornered, in both modes.",
+      "html": "<div class=\"ds-page\"></div>",
+      "css": ".ds-page { background: #ffffff; border: 1px solid #dbe3ec; width: 320px; height: 414px; box-sizing: border-box; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Local Workbench",
+    "overview": "PDFree is a tool that lives on the desk, not in a browser tab. Its chrome is a set of close-to-hand controls arranged in fixed bars, the way a workbench keeps its tools in reach. Everything it needs is local, so the interface never implies that a file is leaving the machine. The page is the work, and the controls are arranged around it for fast, repeated use.",
+    "keyCharacteristics": [
+      "Two fixed toolbar rows (44px and 38px) above the document, and a 32px status bar below it.",
+      "Tonal layering for depth, with light and dark modes that flip every surface value.",
+      "One functional blue accent, used only for working state.",
+      "Pages render on pure white in both modes, so the document reads the same either way.",
+      "Dense controls with compact spacing, sized for long sessions."
+    ],
+    "rules": [
+      { "name": "The Page Is Always White Rule", "body": "The document page is #ffffff in both modes. Dark mode darkens the chrome and the canvas, never the page.", "section": "colors" },
+      { "name": "The Working Blue Rule", "body": "Workbench Blue marks what the user is working on: focus, selection, and the wordmark. It never marks a decorative element or a passive state.", "section": "colors" },
+      { "name": "The Two Sizes Rule", "body": "Body and label carry almost all of the interface. Use display and title only for the empty state and panel headings. Do not add a third intermediate size.", "section": "typography" },
+      { "name": "The Tonal Step Rule", "body": "Depth is a change in surface value, not a shadow. A panel is one step lighter or darker than the layer beneath it.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the page #ffffff in both modes.",
+      "Do reserve Workbench Blue for focus, selection and the wordmark.",
+      "Do create depth with a tonal step between surfaces, never with a drop shadow.",
+      "Do keep body text at 14px and labels at 12px, and use display or title sizes only for headings.",
+      "Do make a new panel resizable from its inner edge, within its documented min and max width.",
+      "Do keep modal decisions to the smallest set of buttons the choice needs."
+    ],
+    "donts": [
+      "Don't add drop shadows to panels, dialogs or the page.",
+      "Don't use gradients or a bright marketing palette.",
+      "Don't imply that a file is uploaded or leaves the machine, in copy or in visuals.",
+      "Don't use the amber Warning colours for decoration.",
+      "Don't add a third intermediate type size.",
+      "Don't add new emoji icons; new icons follow the monoline target."
+    ]
+  }
+}
