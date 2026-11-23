@@ -45,6 +45,16 @@ fn emit(shared: &Shared, events: &Sender<Event>, mut event: Event) -> bool {
     }
 }
 
+// A full-document review count in progress, scanned one page per loop iteration.
+struct ReviewScan {
+    document: u64,
+    revision: u64,
+    next_page: usize,
+    count: usize,
+    // A page could not be read, so `count` is only a lower bound.
+    failed: bool,
+}
+
 pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>, workers: usize) {
     let (jobs, job_rx) = bounded::<Job>(workers);
     let (completed, results) = bounded::<Completed>(workers);
@@ -99,6 +109,9 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
     let mut content: u64 = 0;
     let mut annotation_queue = std::collections::VecDeque::new();
     let mut form_queue = std::collections::VecDeque::new();
+    let mut review_scan: Option<ReviewScan> = None;
+    // Kept across iterations so a command that ends an iteration early cannot lose it.
+    let mut pending_review: Option<(u64, u64)> = None;
     let mut annotation_cache = HashMap::new();
     let mut source_path = std::path::PathBuf::new();
     let mut source_stamp: Option<crate::digital_signatures::SourceStamp> = None;
@@ -120,12 +133,17 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
             let mut slot = shared.desired.lock().unwrap();
             std::mem::take(&mut *slot)
         };
+        if desired.review_count.is_some() {
+            pending_review = desired.review_count;
+        }
         if let Some(open) = desired.open {
             if detection.take().is_some() {
                 shared.file_busy.store(false, Ordering::Release);
             }
             detection_done = None;
             form_queue.clear();
+            review_scan = None;
+            pending_review = None;
             journal = None;
             content = 0;
             shared.content.store(0, Ordering::Release);
@@ -864,6 +882,18 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
         {
             form_queue = pages.into_iter().filter(|p| *p < geometry.len()).collect();
         }
+        if let Some((id, rev)) = pending_review.take()
+            && id == document_id
+            && rev == journal.as_ref().map_or(0, |h| h.revision())
+        {
+            review_scan = Some(ReviewScan {
+                document: id,
+                revision: rev,
+                next_page: 0,
+                count: 0,
+                failed: false,
+            });
+        }
         if let Some((id, rev)) = desired.outlines
             && id == document_id
             && rev == revision
@@ -1012,6 +1042,35 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                             },
                         );
                     }
+                }
+            }
+            if let Some(mut scan) = review_scan.take() {
+                let current = journal.as_ref().map_or(0, |h| h.revision());
+                if scan.document != document_id || scan.revision != current {
+                    // An edit or another document superseded this scan; the UI asks again.
+                } else if scan.next_page < geometry.len() {
+                    let page = scan.next_page;
+                    scan.next_page += 1;
+                    match crate::forms::page(doc, page) {
+                        Ok(fields) => {
+                            scan.count += fields.iter().filter(|f| f.spec.review).count();
+                        }
+                        // An unreadable page (for example one over the widget limit) makes
+                        // the total a lower bound; report that instead of an exact count.
+                        Err(_) => scan.failed = true,
+                    }
+                    review_scan = Some(scan);
+                } else {
+                    emit(
+                        &shared,
+                        &events,
+                        Event::ReviewCount {
+                            document: scan.document,
+                            revision: scan.revision,
+                            count: scan.count,
+                            complete: !scan.failed,
+                        },
+                    );
                 }
             }
             if let Some(page) = annotation_queue.pop_front() {
@@ -1259,9 +1318,12 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                 cursor += 1;
             }
         }
-        let _ = wake.recv_timeout(Duration::from_millis(
-            crate::constants::WAKE_RECV_TIMEOUT_MILLIS,
-        ));
+        // Keep scanning without sleeping while a review count is in progress.
+        if review_scan.is_none() {
+            let _ = wake.recv_timeout(Duration::from_millis(
+                crate::constants::WAKE_RECV_TIMEOUT_MILLIS,
+            ));
+        }
     }
     drop(jobs);
     // Dropping the receiver releases workers even if shutdown finds completed tiles queued.

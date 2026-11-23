@@ -23,6 +23,8 @@ pub(crate) struct Forms {
     close_after_commit: bool,
     open_after_commit: Option<std::path::PathBuf>,
     review_pages: std::collections::VecDeque<usize>,
+    // (document, revision) of the last full-document review count requested.
+    review_requested: Option<(u64, u64)>,
     signature_strokes: Vec<Vec<[f32; 2]>>,
     signature_image: Option<Vec<u8>>,
     signature_pending: bool,
@@ -43,6 +45,8 @@ impl State {
         ui.set_form_draw(false);
         ui.set_form_draft_visible(false);
         ui.set_form_detecting(false);
+        ui.set_form_review_count(0);
+        ui.set_form_review_partial(false);
         ui.set_signature_visible(false);
         ui.set_digital_visible(false);
         ui.set_digital_signing(false);
@@ -1143,6 +1147,16 @@ impl State {
                 ui.set_form_surfaces(ModelRc::default());
                 true
             }
+            Event::ReviewCount {
+                document,
+                revision,
+                count,
+                complete,
+            } if *document == self.document.document && *revision == self.editor.revision => {
+                ui.set_form_review_count(*count as i32);
+                ui.set_form_review_partial(!*complete);
+                true
+            }
             Event::Forms {
                 document,
                 revision,
@@ -1243,6 +1257,12 @@ impl State {
     pub(super) fn form_refresh(&mut self, ui: &AppWindow, pages: &[usize]) {
         if ui.get_form_mode() == 0 {
             return;
+        }
+        // One full-document count per revision; the engine answers asynchronously.
+        let request = (self.document.document, self.editor.revision);
+        if self.forms.review_requested != Some(request) {
+            self.forms.review_requested = Some(request);
+            self.engine.review_count(request.0, request.1);
         }
         let wanted = pages.iter().copied().take(16).collect::<Vec<_>>();
         if wanted != self.forms.wanted {
