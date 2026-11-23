@@ -326,6 +326,8 @@ export component AppWindow inherits Window {
     in-out property <bool> context-visible: false;
     in-out property <bool> more-menu-visible: false;
     in-out property <int> form-review-count: 0;
+    // True when some pages could not be checked, so the count is a lower bound.
+    in-out property <bool> form-review-partial: false;
     // Toolbar tiers: wide shows every tool with a label; medium moves Manage pages and
     // Annotations into the More menu; narrow also drops labels to icons.
     // Set from the window width in `changed width` (a binding would loop through layout).
@@ -569,9 +571,9 @@ export component AppWindow inherits Window {
                         }
                         Text { text: "Click a field on the page and type. Tab moves to the next field."; wrap: word-wrap; color: Theme.text-secondary; font-size: Theme.font-s; }
                         Text { text: root.form-status; wrap: word-wrap; color: Theme.text-secondary; }
-                        if root.form-review-count > 0: Rectangle {
+                        if root.form-review-count > 0 || root.form-review-partial: Rectangle {
                             height: 28px; background: Theme.warning-background; border-radius: Theme.radius-s;
-                            Text { x: 8px; width: parent.width - 16px; height: 100%; text: root.form-review-count == 1 ? "1 detected field needs review" : root.form-review-count + " detected fields need review"; color: Theme.warning; font-size: Theme.font-s; font-weight: 600; vertical-alignment: center; overflow: elide; }
+                            Text { x: 8px; width: parent.width - 16px; height: 100%; text: root.form-review-partial ? (root.form-review-count > 0 ? "At least " + root.form-review-count + " detected fields need review" : "Some pages could not be checked for review") : root.form-review-count == 1 ? "1 detected field needs review" : root.form-review-count + " detected fields need review"; color: Theme.warning; font-size: Theme.font-s; font-weight: 600; vertical-alignment: center; overflow: elide; }
                         }
                         HorizontalLayout {
                             spacing: 4px;

@@ -46,6 +46,7 @@ impl State {
         ui.set_form_draft_visible(false);
         ui.set_form_detecting(false);
         ui.set_form_review_count(0);
+        ui.set_form_review_partial(false);
         ui.set_signature_visible(false);
         ui.set_digital_visible(false);
         ui.set_digital_signing(false);
@@ -1150,8 +1151,10 @@ impl State {
                 document,
                 revision,
                 count,
+                complete,
             } if *document == self.document.document && *revision == self.editor.revision => {
                 ui.set_form_review_count(*count as i32);
+                ui.set_form_review_partial(!*complete);
                 true
             }
             Event::Forms {

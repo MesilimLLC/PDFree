@@ -51,6 +51,8 @@ struct ReviewScan {
     revision: u64,
     next_page: usize,
     count: usize,
+    // A page could not be read, so `count` is only a lower bound.
+    failed: bool,
 }
 
 pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>, workers: usize) {
@@ -108,6 +110,8 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
     let mut annotation_queue = std::collections::VecDeque::new();
     let mut form_queue = std::collections::VecDeque::new();
     let mut review_scan: Option<ReviewScan> = None;
+    // Kept across iterations so a command that ends an iteration early cannot lose it.
+    let mut pending_review: Option<(u64, u64)> = None;
     let mut annotation_cache = HashMap::new();
     let mut source_path = std::path::PathBuf::new();
     let mut source_stamp: Option<crate::digital_signatures::SourceStamp> = None;
@@ -129,6 +133,9 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
             let mut slot = shared.desired.lock().unwrap();
             std::mem::take(&mut *slot)
         };
+        if desired.review_count.is_some() {
+            pending_review = desired.review_count;
+        }
         if let Some(open) = desired.open {
             if detection.take().is_some() {
                 shared.file_busy.store(false, Ordering::Release);
@@ -136,6 +143,7 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
             detection_done = None;
             form_queue.clear();
             review_scan = None;
+            pending_review = None;
             journal = None;
             content = 0;
             shared.content.store(0, Ordering::Release);
@@ -874,7 +882,7 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
         {
             form_queue = pages.into_iter().filter(|p| *p < geometry.len()).collect();
         }
-        if let Some((id, rev)) = desired.review_count
+        if let Some((id, rev)) = pending_review.take()
             && id == document_id
             && rev == journal.as_ref().map_or(0, |h| h.revision())
         {
@@ -883,6 +891,7 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                 revision: rev,
                 next_page: 0,
                 count: 0,
+                failed: false,
             });
         }
         if let Some((id, rev)) = desired.outlines
@@ -1046,18 +1055,9 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                         Ok(fields) => {
                             scan.count += fields.iter().filter(|f| f.spec.review).count();
                         }
-                        Err(message) => {
-                            emit(
-                                &shared,
-                                &events,
-                                Event::ReaderError {
-                                    document: document_id,
-                                    operation: "review count",
-                                    page: Some(page),
-                                    message,
-                                },
-                            );
-                        }
+                        // An unreadable page (for example one over the widget limit) makes
+                        // the total a lower bound; report that instead of an exact count.
+                        Err(_) => scan.failed = true,
                     }
                     review_scan = Some(scan);
                 } else {
@@ -1068,6 +1068,7 @@ pub(super) fn run(shared: Arc<Shared>, wake: Receiver<()>, events: Sender<Event>
                             document: scan.document,
                             revision: scan.revision,
                             count: scan.count,
+                            complete: !scan.failed,
                         },
                     );
                 }

@@ -195,6 +195,8 @@ pub enum Event {
         document: u64,
         revision: u64,
         count: usize,
+        /// False when a page could not be read, so `count` is only a lower bound.
+        complete: bool,
     },
     Outlines {
         document: u64,

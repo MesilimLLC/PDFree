@@ -340,10 +340,14 @@ fn review_count_scans_the_whole_document_for_the_requested_revision() {
     e.review_count(1, rev);
     match wait(&e, |v| matches!(v, Event::ReviewCount { .. })) {
         Event::ReviewCount {
-            revision, count, ..
+            revision,
+            count,
+            complete,
+            ..
         } => {
             assert_eq!(revision, rev);
             assert_eq!(count, 1);
+            assert!(complete, "every page was readable");
         }
         _ => unreachable!(),
     }
