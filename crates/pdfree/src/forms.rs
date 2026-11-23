@@ -43,6 +43,7 @@ impl State {
         ui.set_form_draw(false);
         ui.set_form_draft_visible(false);
         ui.set_form_detecting(false);
+        ui.set_form_review_count(0);
         ui.set_signature_visible(false);
         ui.set_digital_visible(false);
         ui.set_digital_signing(false);

@@ -118,6 +118,7 @@ component ToolButton inherits Rectangle {
     background: !root.enabled ? Theme.control : touch.pressed ? Theme.control-pressed : touch.has-hover ? Theme.control-hover : root.checked ? Theme.accent-soft : Theme.control;
     accessible-role: button;
     accessible-label: root.text;
+    accessible-enabled: root.enabled;
     accessible-checkable: root.checkable;
     accessible-checked: root.checked;
     accessible-action-default => { if root.enabled { root.clicked(); } }
@@ -173,6 +174,7 @@ component MenuItem inherits Rectangle {
     background: root.enabled && (touch.has-hover || fs.has-focus) ? Theme.control-hover : transparent;
     accessible-role: button;
     accessible-label: root.text;
+    accessible-enabled: root.enabled;
     accessible-action-default => { if root.enabled { root.clicked(); } }
     HorizontalLayout {
         padding-left: 10px;
@@ -581,15 +583,16 @@ export component AppWindow inherits Window {
                             Text { text: "Add a field"; font-weight: 700; color: Theme.text-primary; }
                             HorizontalLayout {
                                 spacing: 4px;
-                                ToolButton { text: "Text"; checked: root.kind-group == 0; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.form-kind = 0; } }
-                                ToolButton { text: "Choice"; checked: root.kind-group == 1; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.form-kind = 4; } }
-                                ToolButton { text: "Signature"; checked: root.kind-group == 2; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.form-kind = 8; } }
+                                ToolButton { text: "Text"; checkable: true; checked: root.kind-group == 0; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.form-kind = 0; } }
+                                ToolButton { text: "Choice"; checkable: true; checked: root.kind-group == 1; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.form-kind = 4; } }
+                                ToolButton { text: "Signature"; checkable: true; checked: root.kind-group == 2; horizontal-stretch: 1; enabled: !root.file-busy; clicked => { root.form-kind = 8; } }
                             }
                             VerticalLayout {
                                 spacing: 4px;
                                 for kind-name[kind-index] in root.kind-names: ToolButton {
                                     height: 28px;
                                     text: kind-name;
+                                    checkable: true;
                                     checked: root.form-kind == root.kind-start + kind-index;
                                     enabled: !root.file-busy;
                                     clicked => { root.form-kind = root.kind-start + kind-index; }
@@ -947,7 +950,7 @@ export component AppWindow inherits Window {
     Rectangle {
         visible: root.more-menu-visible;
         width: 100%; height: 100%;
-        TouchArea { clicked => { root.more-menu-visible = false; } }
+        TouchArea { clicked => { root.more-menu-visible = false; root.focus-document(); } }
         Rectangle {
             x: parent.width - self.width - 8px; y: 46px;
             width: 220px; height: root.toolbar-wide ? 84px : 161px;
